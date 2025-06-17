@@ -31,10 +31,9 @@ RUN rm -rf ./scripts/init-submodules.sh .husky bun.lockb && \
 # Set environment to ignore prepare scripts during install
 ENV HUSKY=0
 ENV NODE_ENV=production
-ENV BUN_INSTALL_LOCKED=0
 
-# Install only production dependencies, force fresh install
-RUN bun install --production
+# Install only production dependencies using npm (bypasses Bun lockfile issues)
+RUN npm install --omit=dev
 
 # Expose default ElizaOS port
 EXPOSE 3000
