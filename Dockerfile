@@ -32,8 +32,8 @@ RUN rm -rf ./scripts/init-submodules.sh .husky bun.lockb && \
 ENV HUSKY=0
 ENV NODE_ENV=production
 
-# Install only production dependencies
-RUN bun install --production
+# Install only production dependencies, allow lockfile update
+RUN bun install --production --no-frozen-lockfile
 
 # Expose default ElizaOS port
 EXPOSE 3000
