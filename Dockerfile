@@ -33,7 +33,7 @@ ENV HUSKY=0
 ENV NODE_ENV=production
 
 # Install only production dependencies, allow lockfile update
-RUN bun install --production
+RUN bun install --production --force
 
 # Expose default ElizaOS port
 EXPOSE 3000
