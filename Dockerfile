@@ -22,7 +22,8 @@ RUN apt-get update && \
     g++ \
     make \
     python3 \
-    unzip && \
+    unzip \
+    ca-certificates && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
