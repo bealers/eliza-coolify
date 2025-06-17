@@ -16,7 +16,7 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g bun@1.2.5
+RUN npm install -g bun@latest
 
 WORKDIR /app
 
@@ -33,7 +33,7 @@ ENV HUSKY=0
 ENV NODE_ENV=production
 
 # Install only production dependencies, allow lockfile update
-RUN bun install --production --force
+RUN bun install --production --frozen-lockfile
 
 # Expose default ElizaOS port
 EXPOSE 3000
