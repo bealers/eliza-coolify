@@ -9,7 +9,7 @@ RUN npm install -g bun@1.2.5 turbo@2.3.3
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
 # Clone the main repository without git history
-RUN curl -L https://github.com/elizaos/eliza/archive/refs/tags/v1.0.0-beta.76.tar.gz | tar xz --strip-components=1
+RUN curl -L https://github.com/elizaos/eliza/archive/refs/tags/v1.0.9.tar.gz | tar xz --strip-components=1
 
 # Clone the plugin specification without git
 RUN mkdir -p plugin-specification && \n    curl -L https://github.com/elizaos/plugin-specification/archive/refs/heads/main.tar.gz | tar xz --strip-components=1 -C plugin-specification
