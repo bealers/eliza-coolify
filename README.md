@@ -34,6 +34,29 @@ If you want to use your own Postgres instance (e.g., managed database, shared DB
    ```
 3. Deploy. Only the Eliza service will be started.
 
+## Version Control
+
+By default, this wrapper uses ElizaOS v1.0.9. You can specify a different version in two ways:
+
+1. **Build Argument**: When building manually, use:
+   ```bash
+   docker build --build-arg ELIZA_VERSION=v1.0.10 .
+   ```
+
+2. **Environment Variable**: In Coolify, set the build argument:
+   ```
+   ELIZA_VERSION=v1.0.10
+   ```
+
+## Technical Details
+
+This wrapper:
+- Downloads the specified ElizaOS release directly from GitHub
+- Installs only production dependencies
+- Removes development tools and scripts
+- Uses Bun for optimal performance
+- Requires no pre-build steps
+
 ## Reference
 - [ElizaOS GitHub](https://github.com/elizaOS/eliza)
 
