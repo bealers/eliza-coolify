@@ -20,19 +20,23 @@ WORKDIR /app
 # Download and extract the latest ElizaOS release
 RUN curl -L https://github.com/elizaOS/eliza/archive/refs/tags/v1.0.9.tar.gz | tar xz --strip-components=1
 
-# Remove dev/test scripts and submodules if present
+# Remove dev/test scripts, submodules, and husky completely
 RUN rm -rf ./scripts/init-submodules.sh && \
     sed -i -e '/postinstall/d' \
            -e '/"scripts": {/,/},/{ /"postinstall":.*,/d }' \
-           -e 's/"prepare": "husky install"/"prepare": "echo Skipping husky install"/g' \
-    package.json
+           -e '/"prepare": "husky install",/d' \
+           -e '/"husky": ".*",/d' \
+    package.json && \
+    rm -rf .husky
+
+# Set environment to ignore prepare scripts during install
+ENV HUSKY=0
+ENV NODE_ENV=production
 
 # Install only production dependencies
 RUN bun install --no-cache --production
 
-ENV NODE_ENV=production
-
-# Expose default ElizaOS ports
+# Expose default ElizaOS port
 EXPOSE 3000
 EXPOSE 50000-50100/udp
 
