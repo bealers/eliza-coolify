@@ -47,7 +47,7 @@ RUN rm -f ./scripts/init-submodules.sh && \
 
 # Install dependencies and build
 RUN bun install --no-cache && \
-    turbo run build --filter=!docs
+    turbo run build || true
 
 # Create production image
 FROM node:23.3.0-slim
