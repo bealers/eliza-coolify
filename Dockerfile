@@ -6,7 +6,7 @@
 # - Fetches and builds the latest ElizaOS release by default.
 # - Optimized for Coolify
 
-FROM node:23.3.0-slim AS builder
+FROM node:23.3.0-slim as builder
 
 # Allow override of ElizaOS version/tag at build time
 ARG ELIZA_TAG=latest
@@ -37,9 +37,6 @@ RUN if [ "$ELIZA_TAG" = "latest" ]; then \
     echo "Using ElizaOS tag: $ELIZA_TAG" && \
     curl -L https://github.com/elizaos/eliza/archive/refs/tags/$ELIZA_TAG.tar.gz | tar xz --strip-components=1
 
-# Download plugin-specification (required for ElizaOS plugins)
-RUN mkdir -p plugin-specification && \
-    curl -L https://github.com/elizaos/plugin-specification/archive/refs/heads/main.tar.gz | tar xz --strip-components=1 -C plugin-specification
 
 # Remove postinstall script that tries to initialize git submodules (not needed in this wrapper)
 RUN sed -i '/postinstall:/d' package.json
