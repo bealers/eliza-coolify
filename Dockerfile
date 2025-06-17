@@ -33,9 +33,9 @@ RUN rm -rf ./scripts/init-submodules.sh && \
 ENV HUSKY=0
 ENV NODE_ENV=production
 
-# Install only production dependencies
-# --no-frozen-lockfile allows bun to update the lockfile when package.json changes
-RUN bun install --no-cache --production --no-frozen-lockfile
+# Remove existing lockfile and install only production dependencies
+RUN rm -f bun.lockb && \
+    bun install --no-cache --production
 
 # Expose default ElizaOS port
 EXPOSE 3000
