@@ -53,13 +53,14 @@ FROM node:23.3.0-slim
 
 WORKDIR /app
 
-# Install runtime dependencies only
+# Install runtime dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     curl \
     ffmpeg \
     python3 \
-    unzip && \
+    unzip \
+    ca-certificates && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
