@@ -1,0 +1,29 @@
+version: '3'
+services:
+  eliza:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: elizav2
+    command: bun run start
+    volumes:
+      - /var/run/tappd.sock:/var/run/tappd.sock
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - SERVER_PORT=${SERVER_PORT}
+      - POSTGRES_URL=${POSTGRES_URL}
+      - EVM_CHAINS=${EVM_CHAINS}
+      - BIRDEYE_API_KEY=${BIRDEYE_API_KEY}
+      - DISCORD_APPLICATION_ID=${DISCORD_APPLICATION_ID}
+      - DISCORD_API_TOKEN=${DISCORD_API_TOKEN}
+    ports:
+      - '3000:3000'
+      - '50000-50100:50000-50100/udp'
+    restart: always
+    networks:
+      - eliza-network
+
+networks:
+  eliza-network:
+    driver: bridge 
