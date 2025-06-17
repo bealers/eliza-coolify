@@ -1,8 +1,8 @@
-# Eliza Coolify Wrapper
+# ElizaOS Coolify Production Wrapper
 
-This repository makes it easy to deploy the latest [ElizaOS](https://github.com/elizaOS/eliza) on Coolify, with sensible defaults for most users.
+This repository provides a **minimal, production-ready Docker and Compose setup for ElizaOS**, optimized for Coolify and similar platforms.
 
-## Default: Full Stack Deployment (Coolify Recommended)
+## Default: Full Stack Deployment
 
 By default, this setup runs both Eliza and a bundled Postgres database, mirroring the official ElizaOS configuration.
 
