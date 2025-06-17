@@ -34,7 +34,7 @@ ENV NODE_ENV=production
 ENV BUN_INSTALL_LOCKED=0
 
 # Install only production dependencies, force fresh install
-RUN bun install --production --no-cache
+RUN bun install --production
 
 # Expose default ElizaOS port
 EXPOSE 3000
