@@ -34,7 +34,8 @@ ENV HUSKY=0
 ENV NODE_ENV=production
 
 # Install only production dependencies
-RUN bun install --no-cache --production
+# --no-frozen-lockfile allows bun to update the lockfile when package.json changes
+RUN bun install --no-cache --production --no-frozen-lockfile
 
 # Expose default ElizaOS port
 EXPOSE 3000
