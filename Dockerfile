@@ -19,9 +19,6 @@ RUN apt-get update && \
 # Install PM2 globally for process management
 RUN npm install -g pm2@5.3.0
 
-# Install ElizaOS CLI (not globally)
-RUN npm install -g @elizaos/cli@latest
-
 # Create app user
 RUN groupadd -r eliza && useradd -r -g eliza -s /bin/bash eliza
 
@@ -50,6 +47,9 @@ RUN chmod +x start.sh healthcheck.js scripts/*.sh
 
 # Switch to app user
 USER eliza
+
+# Install ElizaOS CLI as the app user to ensure proper permissions
+RUN npm install -g @elizaos/cli@latest
 
 # Expose ElizaOS ports
 EXPOSE 3000

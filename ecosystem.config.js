@@ -1,8 +1,8 @@
 module.exports = {
   apps: [{
     name: 'elizaos',
-    script: 'elizaos',
-    args: 'start',
+    script: 'npx',
+    args: '@elizaos/cli@latest start --host 0.0.0.0 --port ' + (process.env.API_PORT || 3000),
     cwd: '/app',
     instances: 1,
     autorestart: true,
@@ -12,7 +12,8 @@ module.exports = {
       NODE_ENV: 'production',
       API_PORT: process.env.API_PORT || 3000,
       ENABLE_WEB_UI: process.env.ENABLE_WEB_UI || 'false',
-      LOG_LEVEL: process.env.LOG_LEVEL || 'info'
+      LOG_LEVEL: process.env.LOG_LEVEL || 'info',
+      HOST: '0.0.0.0'
     },
     error_file: '/app/logs/elizaos-error.log',
     out_file: '/app/logs/elizaos-out.log',

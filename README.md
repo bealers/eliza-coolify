@@ -139,6 +139,7 @@ GEMINI_API_KEY=your-gemini-key-here
 # Core Configuration
 NODE_ENV=production
 API_PORT=3000
+HOST=0.0.0.0  # Essential for Docker networking
 ENABLE_WEB_UI=false  # UI disabled by default in production
 LOG_LEVEL=info
 ```

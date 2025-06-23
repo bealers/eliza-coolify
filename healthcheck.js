@@ -1,71 +1,91 @@
 #!/usr/bin/env node
 
 /**
- * ElizaOS Production Health Check Script
- * Comprehensive health monitoring for production deployments
+ * ElizaOS Production Health Check
  */
 
 const http = require('http');
-const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
-const HEALTH_CHECK_PORT = process.env.API_PORT || 3000;
-const HEALTH_CHECK_TIMEOUT = 10000; // 10 seconds
-const PM2_HEALTH_CHECK = process.env.PM2_HEALTH_CHECK !== 'false';
+const API_PORT = process.env.API_PORT || 3000;
+const HOST = process.env.HOST || 'localhost';
+
+// Health check configuration
+const HEALTH_CONFIG = {
+  timeout: 10000,
+  endpoints: [
+    '/health',
+    '/api/health', 
+    '/'
+  ],
+  checks: {
+    api: true,
+    pm2: true,
+    logs: true,
+    database: false // Optional, can be enabled if needed
+  }
+};
 
 /**
- * Check if ElizaOS API is responding
+ * Check if API endpoint is responding
  */
-function checkAPI() {
-  return new Promise((resolve, reject) => {
-    const options = {
-      hostname: 'localhost',
-      port: HEALTH_CHECK_PORT,
-      path: '/api/health',
-      method: 'GET',
-      timeout: HEALTH_CHECK_TIMEOUT
+async function checkAPI() {
+  return new Promise((resolve) => {
+    let resolved = false;
+    
+    const checkEndpoint = (endpoint) => {
+      return new Promise((endpointResolve) => {
+        const options = {
+          hostname: HOST,
+          port: API_PORT,
+          path: endpoint,
+          method: 'GET',
+          timeout: 5000,
+          headers: {
+            'User-Agent': 'ElizaOS-HealthCheck/1.0'
+          }
+        };
+
+        const req = http.request(options, (res) => {
+          console.log(`Health check ${endpoint}: ${res.statusCode}`);
+          
+          let data = '';
+          res.on('data', chunk => data += chunk);
+          res.on('end', () => {
+            if (res.statusCode >= 200 && res.statusCode < 400) {
+              endpointResolve({ success: true, endpoint, statusCode: res.statusCode, data });
+            } else {
+              endpointResolve({ success: false, endpoint, statusCode: res.statusCode, error: `HTTP ${res.statusCode}` });
+            }
+          });
+        });
+
+        req.on('error', (err) => {
+          console.log(`Health check ${endpoint} failed: ${err.message}`);
+          endpointResolve({ success: false, endpoint, error: err.message });
+        });
+
+        req.on('timeout', () => {
+          console.log(`Health check ${endpoint} timed out`);
+          req.destroy();
+          endpointResolve({ success: false, endpoint, error: 'Timeout' });
+        });
+
+        req.end();
+      });
     };
 
-    const req = http.request(options, (res) => {
-      let data = '';
-      
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
-      
-      res.on('end', () => {
-        if (res.statusCode === 200) {
-          try {
-            const healthData = JSON.parse(data);
-            resolve({
-              status: 'healthy',
-              api: true,
-              statusCode: res.statusCode,
-              response: healthData
-            });
-          } catch (e) {
-            resolve({
-              status: 'healthy',
-              api: true,
-              statusCode: res.statusCode,
-              response: data
-            });
-          }
+    // Try multiple endpoints
+    Promise.all(HEALTH_CONFIG.endpoints.map(checkEndpoint))
+      .then(results => {
+        const successful = results.find(r => r.success);
+        if (successful) {
+          resolve({ success: true, result: successful });
         } else {
-          reject(new Error(`API returned status ${res.statusCode}: ${data}`));
+          resolve({ success: false, results });
         }
       });
-    });
-
-    req.on('error', (err) => {
-      reject(new Error(`API connection failed: ${err.message}`));
-    });
-
-    req.on('timeout', () => {
-      req.destroy();
-      reject(new Error('API health check timeout'));
-    });
-
-    req.end();
   });
 }
 
@@ -73,185 +93,203 @@ function checkAPI() {
  * Check PM2 process status
  */
 function checkPM2() {
-  if (!PM2_HEALTH_CHECK) {
-    return Promise.resolve({ status: 'skipped', pm2: 'disabled' });
-  }
-
-  try {
-    const pm2List = execSync('pm2 jlist', { encoding: 'utf8', timeout: 5000 });
-    const processes = JSON.parse(pm2List);
+  return new Promise((resolve) => {
+    const { exec } = require('child_process');
     
-    const elizaProcess = processes.find(p => p.name === 'elizaos');
-    
-    if (!elizaProcess) {
-      throw new Error('ElizaOS process not found in PM2');
-    }
+    exec('pm2 jlist', { timeout: 5000 }, (error, stdout, stderr) => {
+      if (error) {
+        resolve({ success: false, error: error.message });
+        return;
+      }
 
-    const isOnline = elizaProcess.pm2_env.status === 'online';
-    const uptime = elizaProcess.pm2_env.pm_uptime;
-    const restarts = elizaProcess.pm2_env.restart_time;
-    const memory = elizaProcess.pm2_env.monit.memory;
-    const cpu = elizaProcess.pm2_env.monit.cpu;
+      try {
+        const processes = JSON.parse(stdout);
+        const elizaProcess = processes.find(p => p.name === 'elizaos');
+        
+        if (!elizaProcess) {
+          resolve({ success: false, error: 'ElizaOS process not found' });
+          return;
+        }
 
-    if (!isOnline) {
-      throw new Error(`ElizaOS process status: ${elizaProcess.pm2_env.status}`);
-    }
+        const isOnline = elizaProcess.pm2_env.status === 'online';
+        const uptime = elizaProcess.pm2_env.pm_uptime;
+        const restarts = elizaProcess.pm2_env.restart_time;
 
-    return Promise.resolve({
-      status: 'healthy',
-      pm2: true,
-      process: {
-        name: elizaProcess.name,
-        status: elizaProcess.pm2_env.status,
-        uptime: Date.now() - uptime,
-        restarts: restarts,
-        memory: Math.round(memory / 1024 / 1024), // MB
-        cpu: cpu,
-        pid: elizaProcess.pid
+        resolve({
+          success: isOnline,
+          status: elizaProcess.pm2_env.status,
+          uptime: Date.now() - uptime,
+          restarts,
+          memory: elizaProcess.monit ? elizaProcess.monit.memory : 0,
+          cpu: elizaProcess.monit ? elizaProcess.monit.cpu : 0
+        });
+      } catch (parseError) {
+        resolve({ success: false, error: `PM2 parse error: ${parseError.message}` });
       }
     });
-  } catch (error) {
-    return Promise.reject(new Error(`PM2 health check failed: ${error.message}`));
-  }
+  });
 }
 
 /**
- * Check system resources
+ * Check log files
  */
-function checkSystem() {
-  try {
-    const memInfo = execSync('cat /proc/meminfo | head -3', { encoding: 'utf8' });
-    const loadAvg = execSync('cat /proc/loadavg', { encoding: 'utf8' });
-    const diskUsage = execSync('df -h /app', { encoding: 'utf8' });
+function checkLogs() {
+  const logFiles = [
+    '/app/logs/elizaos-out.log',
+    '/app/logs/elizaos-error.log',
+    '/app/logs/elizaos-combined.log'
+  ];
 
-    // Parse memory info
-    const memLines = memInfo.split('\n');
-    const memTotal = parseInt(memLines[0].match(/\d+/)[0]);
-    const memFree = parseInt(memLines[1].match(/\d+/)[0]);
-    const memAvailable = parseInt(memLines[2].match(/\d+/)[0]);
-    const memUsed = memTotal - memFree;
-
-    // Parse load average
-    const load = loadAvg.split(' ');
-
-    // Parse disk usage
-    const diskLines = diskUsage.split('\n');
-    const diskInfo = diskLines[1].split(/\s+/);
-
-    return Promise.resolve({
-      status: 'healthy',
-      system: true,
-      resources: {
-        memory: {
-          total: Math.round(memTotal / 1024), // MB
-          used: Math.round(memUsed / 1024), // MB
-          available: Math.round(memAvailable / 1024), // MB
-          usage: Math.round((memUsed / memTotal) * 100) // %
-        },
-        load: {
-          '1min': parseFloat(load[0]),
-          '5min': parseFloat(load[1]),
-          '15min': parseFloat(load[2])
-        },
-        disk: {
-          filesystem: diskInfo[0],
-          size: diskInfo[1],
-          used: diskInfo[2],
-          available: diskInfo[3],
-          usage: diskInfo[4]
+  const results = {};
+  
+  logFiles.forEach(logFile => {
+    try {
+      if (fs.existsSync(logFile)) {
+        const stats = fs.statSync(logFile);
+        const size = stats.size;
+        const modified = stats.mtime;
+        
+        // Read last few lines if file has content
+        let lastLines = '';
+        if (size > 0) {
+          try {
+            const content = fs.readFileSync(logFile, 'utf8');
+            const lines = content.split('\n').filter(line => line.trim());
+            lastLines = lines.slice(-3).join('\n');
+          } catch (readError) {
+            lastLines = `Error reading: ${readError.message}`;
+          }
         }
+        
+        results[path.basename(logFile)] = {
+          exists: true,
+          size,
+          modified,
+          lastModified: Date.now() - modified.getTime(),
+          hasContent: size > 0,
+          preview: lastLines
+        };
+      } else {
+        results[path.basename(logFile)] = {
+          exists: false
+        };
       }
-    });
-  } catch (error) {
-    return Promise.reject(new Error(`System health check failed: ${error.message}`));
-  }
+    } catch (error) {
+      results[path.basename(logFile)] = {
+        exists: false,
+        error: error.message
+      };
+    }
+  });
+
+  return { success: true, files: results };
 }
 
 /**
  * Main health check function
  */
-async function healthCheck() {
-  const checks = {
+async function runHealthCheck() {
+  console.log(`\n🏥 ElizaOS Health Check Starting...`);
+  console.log(`   Target: ${HOST}:${API_PORT}`);
+  console.log(`   Time: ${new Date().toISOString()}`);
+  
+  const results = {
     timestamp: new Date().toISOString(),
-    service: 'elizaos',
-    version: process.env.npm_package_version || 'unknown',
-    environment: process.env.NODE_ENV || 'development',
+    overall: false,
     checks: {}
   };
 
-  let overallHealth = true;
-  const errors = [];
-
   // API Health Check
-  try {
-    const apiResult = await checkAPI();
-    checks.checks.api = apiResult;
-  } catch (error) {
-    checks.checks.api = { status: 'unhealthy', error: error.message };
-    overallHealth = false;
-    errors.push(`API: ${error.message}`);
+  if (HEALTH_CONFIG.checks.api) {
+    console.log('\n📡 Checking API...');
+    try {
+      const apiResult = await checkAPI();
+      results.checks.api = apiResult;
+      console.log(`   API Status: ${apiResult.success ? '✅ OK' : '❌ FAILED'}`);
+      if (apiResult.success) {
+        console.log(`   Endpoint: ${apiResult.result.endpoint} (${apiResult.result.statusCode})`);
+      } else if (apiResult.results) {
+        apiResult.results.forEach(r => {
+          console.log(`   ${r.endpoint}: ${r.error || r.statusCode}`);
+        });
+      }
+    } catch (error) {
+      results.checks.api = { success: false, error: error.message };
+      console.log(`   API Status: ❌ FAILED - ${error.message}`);
+    }
   }
 
-  // PM2 Health Check
-  try {
-    const pm2Result = await checkPM2();
-    checks.checks.pm2 = pm2Result;
-  } catch (error) {
-    checks.checks.pm2 = { status: 'unhealthy', error: error.message };
-    overallHealth = false;
-    errors.push(`PM2: ${error.message}`);
+  // PM2 Health Check  
+  if (HEALTH_CONFIG.checks.pm2) {
+    console.log('\n⚙️  Checking PM2...');
+    try {
+      const pm2Result = await checkPM2();
+      results.checks.pm2 = pm2Result;
+      console.log(`   PM2 Status: ${pm2Result.success ? '✅ OK' : '❌ FAILED'}`);
+      if (pm2Result.success) {
+        console.log(`   Process: ${pm2Result.status}, Uptime: ${Math.round(pm2Result.uptime/1000)}s, Restarts: ${pm2Result.restarts}`);
+        console.log(`   Resources: ${Math.round(pm2Result.memory/1024/1024)}MB RAM, ${pm2Result.cpu}% CPU`);
+      } else {
+        console.log(`   Error: ${pm2Result.error}`);
+      }
+    } catch (error) {
+      results.checks.pm2 = { success: false, error: error.message };
+      console.log(`   PM2 Status: ❌ FAILED - ${error.message}`);
+    }
   }
 
-  // System Health Check
-  try {
-    const systemResult = await checkSystem();
-    checks.checks.system = systemResult;
-  } catch (error) {
-    checks.checks.system = { status: 'unhealthy', error: error.message };
-    overallHealth = false;
-    errors.push(`System: ${error.message}`);
+  // Logs Health Check
+  if (HEALTH_CONFIG.checks.logs) {
+    console.log('\n📝 Checking Logs...');
+    try {
+      const logsResult = checkLogs();
+      results.checks.logs = logsResult;
+      
+      Object.entries(logsResult.files).forEach(([filename, info]) => {
+        if (info.exists) {
+          const age = Math.round(info.lastModified / 1000);
+          console.log(`   ${filename}: ${info.size} bytes, ${age}s ago ${info.hasContent ? '📄' : '📭'}`);
+          if (info.preview && info.hasContent) {
+            console.log(`     Latest: ${info.preview.split('\n')[0].substring(0, 80)}`);
+          }
+        } else {
+          console.log(`   ${filename}: ❌ Missing`);
+        }
+      });
+    } catch (error) {
+      results.checks.logs = { success: false, error: error.message };
+      console.log(`   Logs Status: ❌ FAILED - ${error.message}`);
+    }
   }
 
-  // Summary
-  checks.status = overallHealth ? 'healthy' : 'unhealthy';
-  checks.healthy = overallHealth;
+  // Overall health determination
+  const criticalChecks = ['api'];
+  results.overall = criticalChecks.every(check => 
+    results.checks[check] && results.checks[check].success
+  );
+
+  console.log(`\n🎯 Overall Health: ${results.overall ? '✅ HEALTHY' : '❌ UNHEALTHY'}`);
   
-  if (!overallHealth) {
-    checks.errors = errors;
-  }
-
-  return checks;
+  return results;
 }
 
-/**
- * Run health check and output results
- */
-async function main() {
-  try {
-    const healthResult = await healthCheck();
-    
-    // Output JSON for structured logging
-    console.log(JSON.stringify(healthResult, null, 2));
-    
-    // Exit with appropriate code
-    process.exit(healthResult.healthy ? 0 : 1);
-  } catch (error) {
-    console.error(JSON.stringify({
-      timestamp: new Date().toISOString(),
-      service: 'elizaos',
-      status: 'error',
-      healthy: false,
-      error: error.message,
-      stack: error.stack
-    }, null, 2));
-    
-    process.exit(1);
-  }
-}
-
-// Run if called directly
+// Main execution
 if (require.main === module) {
-  main();
+  runHealthCheck()
+    .then(results => {
+      if (results.overall) {
+        console.log('\n✅ Health check passed');
+        process.exit(0);
+      } else {
+        console.log('\n❌ Health check failed');
+        console.log('\nDebug info:', JSON.stringify(results, null, 2));
+        process.exit(1);
+      }
+    })
+    .catch(error => {
+      console.error('\n💥 Health check crashed:', error);
+      process.exit(1);
+    });
 }
 
-module.exports = { healthCheck, checkAPI, checkPM2, checkSystem }; 
+module.exports = { runHealthCheck }; 
