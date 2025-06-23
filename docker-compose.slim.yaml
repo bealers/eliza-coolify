@@ -1,31 +1,135 @@
-version: '3'
+version: '3.8'
+
 services:
+  # ElizaOS Production Service (External Database)
   eliza:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: elizav2
-    command: bun run start
-    volumes:
-      - /var/run/tappd.sock:/var/run/tappd.sock
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - SERVER_PORT=${SERVER_PORT}
-      - POSTGRES_URL=${POSTGRES_URL}
-      - EVM_CHAINS=${EVM_CHAINS}
-      - BIRDEYE_API_KEY=${BIRDEYE_API_KEY}
-      - DISCORD_APPLICATION_ID=${DISCORD_APPLICATION_ID}
-      - DISCORD_API_TOKEN=${DISCORD_API_TOKEN}
-      - TEE_MODE=PRODUCTION
-      - WALLET_SECRET_SALT=${WALLET_SECRET_SALT}
+    container_name: elizaos-slim
+    restart: unless-stopped
     ports:
-      - '3000:3000'
-      - '50000-50100:50000-50100/udp'
-    restart: always
+      - "${API_PORT:-3000}:${API_PORT:-3000}"
+      - "50000-50100:50000-50100/udp"
+    
+    environment:
+      # Core Configuration
+      NODE_ENV: production
+      API_PORT: ${API_PORT:-3000}
+      ENABLE_WEB_UI: ${ENABLE_WEB_UI:-false}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      
+      # External Database (Required)
+      DATABASE_URL: ${DATABASE_URL}
+      
+      # AI Providers
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      OLLAMA_API_URL: ${OLLAMA_API_URL}
+      
+      # Integration Services
+      DISCORD_APPLICATION_ID: ${DISCORD_APPLICATION_ID}
+      DISCORD_API_TOKEN: ${DISCORD_API_TOKEN}
+      DISCORD_PUBLIC_KEY: ${DISCORD_PUBLIC_KEY}
+      
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      
+      MATTERMOST_URL: ${MATTERMOST_URL}
+      MATTERMOST_TOKEN: ${MATTERMOST_TOKEN}
+      MATTERMOST_USERNAME: ${MATTERMOST_USERNAME}
+      
+      # Twitter/X Integration
+      TWITTER_USERNAME: ${TWITTER_USERNAME}
+      TWITTER_PASSWORD: ${TWITTER_PASSWORD}
+      TWITTER_EMAIL: ${TWITTER_EMAIL}
+      TWITTER_2FA_SECRET: ${TWITTER_2FA_SECRET}
+      
+      # Blockchain Integrations
+      EVM_PRIVATE_KEY: ${EVM_PRIVATE_KEY}
+      EVM_RPC_URL: ${EVM_RPC_URL}
+      SOLANA_PRIVATE_KEY: ${SOLANA_PRIVATE_KEY}
+      SOLANA_RPC_URL: ${SOLANA_RPC_URL}
+      
+      # External APIs
+      BIRDEYE_API_KEY: ${BIRDEYE_API_KEY}
+      COINGECKO_API_KEY: ${COINGECKO_API_KEY}
+      OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY}
+      
+      # Security & Performance
+      JWT_SECRET: ${JWT_SECRET}
+      CORS_ORIGIN: ${CORS_ORIGIN:-*}
+      CORS_CREDENTIALS: ${CORS_CREDENTIALS:-false}
+      
+      RATE_LIMIT_REQUESTS: ${RATE_LIMIT_REQUESTS:-100}
+      RATE_LIMIT_WINDOW: ${RATE_LIMIT_WINDOW:-900000}
+      
+      # Application Settings
+      CHARACTER_FILE: ${CHARACTER_FILE:-characters/default.character.json}
+      USE_CHARACTER_STORAGE: ${USE_CHARACTER_STORAGE:-true}
+      MAX_MEMORY_USAGE: ${MAX_MEMORY_USAGE:-2048}
+      CONVERSATION_MEMORY_LIMIT: ${CONVERSATION_MEMORY_LIMIT:-50}
+      
+      # WebSocket Configuration
+      WS_HEARTBEAT_INTERVAL: ${WS_HEARTBEAT_INTERVAL:-30000}
+      WS_CONNECTION_TIMEOUT: ${WS_CONNECTION_TIMEOUT:-60000}
+      
+      # Debug Options (disabled in production)
+      DEBUG: ${DEBUG:-false}
+      VERBOSE_LOGGING: ${VERBOSE_LOGGING:-false}
+      ENABLE_TRACE: ${ENABLE_TRACE:-false}
+    
+    volumes:
+      # Persistent data storage
+      - eliza_data:/app/data
+      - eliza_logs:/app/logs
+      # Character files (optional - mount your characters directory)
+      - ./characters:/app/characters:ro
+    
     networks:
       - eliza-network
+    
+    # Resource limits for production
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${API_PORT:-3000}/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Coolify integration (if using Coolify)
+    labels:
+      - "coolify.managed=true"
+      - "traefik.enable=true"
+      - "traefik.http.routers.elizaos.rule=Host(`${COOLIFY_FQDN:-localhost}`)"
+      - "traefik.http.routers.elizaos.tls=true"
+      - "traefik.http.routers.elizaos.tls.certresolver=letsencrypt"
+      - "traefik.http.services.elizaos.loadbalancer.server.port=${API_PORT:-3000}"
+
+volumes:
+  eliza_data:
+    driver: local
+  eliza_logs:
+    driver: local
 
 networks:
   eliza-network:
-    driver: bridge 
+    driver: bridge
+    name: elizaos-slim-network 

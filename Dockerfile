@@ -1,43 +1,64 @@
 # syntax=docker/dockerfile:1.4
 
-# Eliza Coolify Wrapper 
-# --------------------------------
-# - Fetches and builds the latest tagged ElizaOS release (by default)
-# - Optimized for ease of Coolify installation
+# ElizaOS Production Deployment
 
 FROM node:23.3.0-slim
 
-# Allow setting ElizaOS version at build time
-ARG ELIZA_VERSION=v1.0.9
-
-# Install only what is needed for runtime
+# Install system dependencies
 RUN apt-get update && \
-    apt-get install -y curl ffmpeg python3 unzip ca-certificates jq && \
+    apt-get install -y \
+        curl \
+        ffmpeg \
+        python3 \
+        ca-certificates \
+        dumb-init \
+        procps && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g bun@latest
+# Install PM2 globally for process management
+RUN npm install -g pm2@5.3.0
+
+# Install ElizaOS CLI (not globally)
+RUN npm install -g @elizaos/cli@1.0.9
+
+# Create app user
+RUN groupadd -r eliza && useradd -r -g eliza -s /bin/bash eliza
 
 WORKDIR /app
 
-# Download and extract the specified ElizaOS release
-RUN curl -L https://github.com/elizaOS/eliza/archive/refs/tags/${ELIZA_VERSION}.tar.gz | tar xz --strip-components=1
+# Create necessary directories with proper permissions
+RUN mkdir -p /app/characters /app/data /app/logs && \
+    chown -R eliza:eliza /app
 
-# Clean up package.json and remove all development artifacts
-RUN rm -rf ./scripts/init-submodules.sh .husky bun.lockb && \
-    jq 'del(.devDependencies) | del(.scripts.prepare) | del(.scripts.postinstall) | del(.husky)' package.json > package.json.tmp && \
-    mv package.json.tmp package.json
+# Copy application files
+COPY --chown=eliza:eliza ecosystem.config.js ./
+COPY --chown=eliza:eliza start.sh ./
+COPY --chown=eliza:eliza healthcheck.js ./
+COPY --chown=eliza:eliza .env* ./
 
-# Set environment to ignore prepare scripts during install
-ENV HUSKY=0
-ENV NODE_ENV=production
+# Copy management scripts
+COPY --chown=eliza:eliza scripts/ ./scripts/
 
-# Install only production dependencies using npm (bypasses Bun lockfile issues)
-RUN npm install --omit=dev
+# Copy character files if they exist
+COPY --chown=eliza:eliza characters/ ./characters/
 
-# Expose default ElizaOS port
+# Make scripts executable
+RUN chmod +x start.sh healthcheck.js scripts/*.sh
+
+# Switch to app user
+USER eliza
+
+# Expose ElizaOS ports
 EXPOSE 3000
 EXPOSE 50000-50100/udp
 
-# Start the ElizaOS app
-CMD ["bun", "run", "start"] 
+# Health check with comprehensive monitoring
+HEALTHCHECK --interval=30s --timeout=15s --start-period=90s --retries=3 \
+    CMD node /app/healthcheck.js || exit 1
+
+# Use dumb-init for proper signal handling
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+
+# Start ElizaOS using PM2 through our startup script
+CMD ["./start.sh"] 
