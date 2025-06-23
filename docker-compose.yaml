@@ -55,7 +55,7 @@ services:
     labels:
       - "coolify.managed=true"
       - "caddy_0.encode=zstd gzip"
-      - "caddy_0.handle_path.0_reverse_proxy={{upstreams 3000}}"
+      - "caddy_0.handle_path.0_reverse_proxy=elizaos-prod:3000"
       - "caddy_0.handle_path=/*"
       - "caddy_0.header=-Server"
       - "caddy_0=${COOLIFY_FQDN}"
@@ -133,9 +133,6 @@ volumes:
   # redis_data:
   #   driver: local
 
-networks:
-  default:
-    external: true
-    name: coolify
+# Let Coolify manage networks in Raw Compose mode
 
  
