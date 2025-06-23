@@ -51,16 +51,9 @@ services:
       db:
         condition: service_healthy
     
-    # Coolify proxy labels (Caddy format)
+    # Let Coolify automatically manage proxy configuration
     labels:
       - "coolify.managed=true"
-      - "caddy_0=https://${COOLIFY_FQDN}"
-      - "caddy_0.handle_path=/*"
-      - "caddy_0.handle_path.0_reverse_proxy={{upstreams 3000}}"
-      - "caddy_0.header=-Server"
-      - "caddy_0.try_files={path} /index.html"
-      - "caddy_0.encode=zstd gzip"
-      - "caddy_ingress_network=coolify"
     
     # Resource limits for production
     deploy:
