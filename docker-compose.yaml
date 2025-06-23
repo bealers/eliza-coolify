@@ -51,12 +51,15 @@ services:
       db:
         condition: service_healthy
     
-    # Let Coolify automatically manage proxy configuration
-    # Override the broken upstreams label manually
+    # Manual proxy configuration - Raw Compose Deployment mode
     labels:
       - "coolify.managed=true"
-      - "coolify.port=3000"
+      - "caddy_0.encode=zstd gzip"
       - "caddy_0.handle_path.0_reverse_proxy={{upstreams 3000}}"
+      - "caddy_0.handle_path=/*"
+      - "caddy_0.header=-Server"
+      - "caddy_0=${COOLIFY_FQDN}"
+      - "caddy_ingress_network=coolify"
     
     # Resource limits for production
     deploy:
