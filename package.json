@@ -5,13 +5,14 @@
   "private": true,
   "scripts": {
     "start": "elizaos start",
-    "health": "node healthcheck.js",
+    "health": "bun healthcheck.js",
     "pm2:start": "./scripts/start-elizaos.sh",
     "pm2:stop": "./scripts/stop-elizaos.sh",
     "pm2:status": "./scripts/status-elizaos.sh"
   },
   "dependencies": {
-    "@elizaos/cli": "latest"
+    "@elizaos/cli": "latest",
+    "pm2": "^5.3.0"
   },
   "engines": {
     "node": ">=23.0.0"

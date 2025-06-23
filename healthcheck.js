@@ -96,7 +96,7 @@ function checkPM2() {
   return new Promise((resolve) => {
     const { exec } = require('child_process');
     
-    exec('pm2 jlist', { timeout: 5000 }, (error, stdout, stderr) => {
+    exec('/app/node_modules/.bin/pm2 jlist', { timeout: 5000 }, (error, stdout, stderr) => {
       if (error) {
         resolve({ success: false, error: error.message });
         return;

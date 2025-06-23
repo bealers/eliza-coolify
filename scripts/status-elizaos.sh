@@ -102,7 +102,7 @@ echo ""
 
 # Environment Check
 echo "Environment Configuration:"
-ENV_VARS=("NODE_ENV" "API_PORT" "ENABLE_WEB_UI" "LOG_LEVEL" "POSTGRES_URL")
+ENV_VARS=("NODE_ENV" "API_PORT" "LOG_LEVEL" "POSTGRES_URL")
 AI_VARS=("OPENAI_API_KEY" "ANTHROPIC_API_KEY" "GEMINI_API_KEY")
 
 for var in "${ENV_VARS[@]}"; do

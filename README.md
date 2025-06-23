@@ -1,6 +1,6 @@
-# ElizaOS Production Docker Deployment
+# ElizaOS Coolify Production Deployment
 
-Production-ready ElizaOS deployment tested on Coolify but should work on any Docker friendly set-up.
+Production-ready ElizaOS deployment configuration for Coolify, Docker, and self-hosted environments.
 
 ---
 
@@ -12,6 +12,9 @@ Production-ready ElizaOS deployment tested on Coolify but should work on any Doc
 4. **Set environment variables using the UI**: e.g. `OPENAI_API_KEY`
 5. **Coolify deploys**
 6. **Manage** with `./scripts/status-elizaos.sh`
+
+Assuming you already have wildcard DNS and SSL setup (via the built in proxy) you can set the URL to be https://eliza.yourcoolify.tld.com and 
+
 
 ### Required Environment Variables
 
@@ -25,10 +28,10 @@ OPENAI_API_KEY=sk-your-openai-key-here
 
 # Production Settings (optional)
 NODE_ENV=production
-ENABLE_WEB_UI=false
 LOG_LEVEL=info
 JWT_SECRET=your-secure-secret
 ```
+
 
 ---
 
@@ -42,7 +45,7 @@ JWT_SECRET=your-secure-secret
 - **Security Hardening** - Non-root user, proper permissions, CORS
 
 ### Key Features
-- **API-only mode** - Web UI disabled for production (`ENABLE_WEB_UI=false`)
+- **Production-ready** - Optimized for server deployment
 - **One agent per container** - Scalable microservice architecture
 - **Local package installation** - ElizaOS CLI installed locally, not globally as root
 
@@ -77,9 +80,7 @@ docker-compose -f docker-compose.slim.yaml up -d
 
 ---
 
-## PM2 Management
-
-### Management Scripts
+## Process Management
 
 **Inside Container:**
 ```bash
@@ -141,7 +142,6 @@ GEMINI_API_KEY=your-gemini-key-here
 NODE_ENV=production
 API_PORT=3000
 HOST=0.0.0.0  # Essential for Docker networking
-ENABLE_WEB_UI=false  # UI disabled by default in production
 LOG_LEVEL=info
 ```
 
