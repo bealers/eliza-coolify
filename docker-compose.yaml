@@ -54,15 +54,16 @@ services:
     networks:
       - eliza-network
     
-    # Coolify proxy labels
+    # Coolify proxy labels (Caddy format)
     labels:
       - "coolify.managed=true"
-      - "traefik.enable=true"
-      - "traefik.http.routers.eliza.rule=Host(`${COOLIFY_FQDN}`)"
-      - "traefik.http.routers.eliza.entrypoints=websecure"
-      - "traefik.http.routers.eliza.tls=true"
-      - "traefik.http.routers.eliza.tls.certresolver=letsencrypt"
-      - "traefik.http.services.eliza.loadbalancer.server.port=3000"
+      - "caddy_0=${COOLIFY_FQDN}"
+      - "caddy_0.handle_path=/*"
+      - "caddy_0.handle_path.0_reverse_proxy={{upstreams 3000}}"
+      - "caddy_0.header=-Server"
+      - "caddy_0.try_files={path} /index.html"
+      - "caddy_0.encode=zstd gzip"
+      - "caddy_ingress_network=coolify"
     
     # Resource limits for production
     deploy:
