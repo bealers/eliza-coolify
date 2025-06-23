@@ -9,8 +9,10 @@ services:
     container_name: elizaos-prod
     restart: unless-stopped
     ports:
-      - "${API_PORT:-3000}:${API_PORT:-3000}"
+      - "3000"
       - "50000-50100:50000-50100/udp"
+    expose:
+      - "3000"
     environment:
       # Core Configuration
       NODE_ENV: ${NODE_ENV:-production}
@@ -52,11 +54,13 @@ services:
     networks:
       - eliza-network
     
-    # Caddy proxy labels for Coolify (flexible domain)
+    # Coolify proxy labels (works with both Traefik and Caddy)
     labels:
+      - "coolify.managed=true"
       - "caddy=${COOLIFY_FQDN}"
       - "caddy.reverse_proxy={{upstreams 3000}}"
       - "caddy.tls=internal"
+      - "SERVICE_FQDN_ELIZA_3000=${COOLIFY_FQDN}"
     
     # Resource limits for production
     deploy:
