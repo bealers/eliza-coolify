@@ -26,7 +26,7 @@ RUN groupadd -r eliza && useradd -r -g eliza -s /bin/bash eliza
 WORKDIR /app
 
 # Create necessary directories with proper permissions
-RUN mkdir -p /app/characters /app/data /app/logs && \
+RUN mkdir -p /app/config /app/data /app/logs && \
     chown -R eliza:eliza /app && \
     mkdir -p /home/eliza/.pm2 && \
     chown -R eliza:eliza /home/eliza/.pm2 && \
@@ -48,7 +48,7 @@ COPY --chown=eliza:eliza healthcheck.js ./
 COPY --chown=eliza:eliza scripts/ ./scripts/
 
 # Copy character files if they exist
-COPY --chown=eliza:eliza characters/ ./characters/
+COPY --chown=eliza:eliza config/ ./config/
 
 # Make scripts executable
 RUN chmod +x start.sh healthcheck.js scripts/*.sh

@@ -13,7 +13,7 @@ Production-ready ElizaOS deployment configuration for Coolify, Docker, and self-
 5. **Coolify deploys**
 6. **Manage** with `./scripts/status-elizaos.sh`
 
-Assuming you already have wildcard DNS and SSL setup (via the built in proxy) you can set the URL to be https://eliza.yourcoolify.tld.com and 
+Assuming you already have wildcard DNS and SSL setup so `*.your-coolify.tld.com` works (via the built in proxy) then you can set the URL to be `https://your-character.your-coolify.tld.com` and test the web UI. 
 
 
 ### Required Environment Variables

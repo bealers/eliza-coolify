@@ -52,12 +52,12 @@ fi
 mkdir -p /app/logs
 
 # Validate character files if they exist
-if [ -d "/app/characters" ] && [ "$(ls -A /app/characters)" ]; then
+if [ -d "/app/config/characters" ] && [ "$(ls -A /app/config/characters)" ]; then
     echo "Character files found:"
-    ls -la /app/characters/
+    ls -la /app/config/characters/
     
     # Validate JSON files
-    for file in /app/characters/*.json; do
+    for file in /app/config/characters/*.json; do
         if [ -f "$file" ]; then
             if ! node -p "JSON.parse(require('fs').readFileSync('$file', 'utf8'))" > /dev/null 2>&1; then
                 echo "Invalid JSON in $file"
