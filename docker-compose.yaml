@@ -51,9 +51,6 @@ services:
       db:
         condition: service_healthy
     
-    networks:
-      - eliza-network
-    
     # Coolify proxy labels (Caddy format)
     labels:
       - "coolify.managed=true"
@@ -106,9 +103,6 @@ services:
       # Copy the init script instead of mounting as volume to avoid directory issues
       - ./init-db.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     
-    networks:
-      - eliza-network
-    
     # Security: Don't expose PostgreSQL port externally in production
     # ports:
     #   - "5432:5432"
@@ -156,7 +150,4 @@ volumes:
   # redis_data:
   #   driver: local
 
-networks:
-  eliza-network:
-    driver: bridge
-    name: elizaos-network 
+ 
