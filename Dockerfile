@@ -23,9 +23,6 @@ RUN apt-get update && \
 # Create app user
 RUN groupadd -r eliza && useradd -r -g eliza -s /bin/bash eliza
 
-# Create a global symlink for bun so it's available to all users
-RUN ln -sf /root/.bun/bin/bun /usr/local/bin/bun
-
 WORKDIR /app
 
 # Create necessary directories with proper permissions
@@ -39,11 +36,13 @@ RUN mkdir -p /app/characters /app/data /app/logs && \
 # Copy package.json first for better Docker layer caching
 COPY --chown=eliza:eliza package.json ./
 
+# Install dependencies as root (before switching to eliza user)
+RUN bun install
+
 # Copy application files
 COPY --chown=eliza:eliza ecosystem.config.js ./
 COPY --chown=eliza:eliza start.sh ./
 COPY --chown=eliza:eliza healthcheck.js ./
-COPY --chown=eliza:eliza .env* ./
 
 # Copy management scripts
 COPY --chown=eliza:eliza scripts/ ./scripts/
@@ -54,11 +53,8 @@ COPY --chown=eliza:eliza characters/ ./characters/
 # Make scripts executable
 RUN chmod +x start.sh healthcheck.js scripts/*.sh
 
-# Switch to app user
+# Switch to app user for security
 USER eliza
-
-# Install ElizaOS CLI locally using Bun
-RUN bun install
 
 # Expose ElizaOS ports
 EXPOSE 3000
