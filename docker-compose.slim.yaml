@@ -14,7 +14,7 @@ services:
     
     environment:
       # Core Configuration
-      NODE_ENV: production
+      NODE_ENV: ${NODE_ENV:-production}
       API_PORT: ${API_PORT:-3000}
       ENABLE_WEB_UI: ${ENABLE_WEB_UI:-false}
       LOG_LEVEL: ${LOG_LEVEL:-info}
@@ -65,7 +65,7 @@ services:
       RATE_LIMIT_WINDOW: ${RATE_LIMIT_WINDOW:-900000}
       
       # Application Settings
-      CHARACTER_FILE: ${CHARACTER_FILE:-characters/default.character.json}
+      CHARACTER_FILE: ${CHARACTER_FILE:-characters/production-agent.character.json}
       USE_CHARACTER_STORAGE: ${USE_CHARACTER_STORAGE:-true}
       MAX_MEMORY_USAGE: ${MAX_MEMORY_USAGE:-2048}
       CONVERSATION_MEMORY_LIMIT: ${CONVERSATION_MEMORY_LIMIT:-50}
