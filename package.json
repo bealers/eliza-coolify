@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Production-ready ElizaOS deployment for Coolify",
   "private": true,
-  "type": "module",
   "scripts": {
     "start": "elizaos start",
     "health": "node healthcheck.js",
