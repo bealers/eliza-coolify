@@ -133,4 +133,9 @@ volumes:
   # redis_data:
   #   driver: local
 
+networks:
+  default:
+    external: true
+    name: coolify
+
  
