@@ -2,7 +2,7 @@ module.exports = {
   apps: [{
     name: 'elizaos',
     script: './node_modules/.bin/elizaos',
-    args: 'start --host 0.0.0.0 --port ' + (process.env.API_PORT || 3000),
+    args: 'start --port ' + (process.env.API_PORT || 3000),
     cwd: '/app',
     instances: 1,
     autorestart: true,
