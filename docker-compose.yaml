@@ -52,6 +52,12 @@ services:
     networks:
       - eliza-network
     
+    # Coolify service identification labels
+    labels:
+      - "coolify.enabled=true"
+      - "coolify.name=eliza"
+      - "coolify.http.main=3000"
+    
     # Resource limits for production
     deploy:
       resources:
