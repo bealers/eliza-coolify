@@ -51,15 +51,9 @@ services:
       db:
         condition: service_healthy
     
-    # Manual proxy configuration - Raw Compose Deployment mode
+    # Let Coolify automatically manage proxy configuration
     labels:
       - "coolify.managed=true"
-      - "caddy_0.encode=zstd gzip"
-      - "caddy_0.handle_path.0_reverse_proxy=elizaos-prod:3000"
-      - "caddy_0.handle_path=/*"
-      - "caddy_0.header=-Server"
-      - "caddy_0=${COOLIFY_FQDN}"
-      - "caddy_ingress_network=coolify"
     
     # Resource limits for production
     deploy:
@@ -133,6 +127,6 @@ volumes:
   # redis_data:
   #   driver: local
 
-# Let Coolify manage networks in Raw Compose mode
+# Let Coolify manage networks automatically
 
  
