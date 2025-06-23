@@ -18,7 +18,7 @@ services:
       ENABLE_WEB_UI: ${ENABLE_WEB_UI:-false}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       
-      POSTGRES_URL: postgresql://eliza:${POSTGRES_PASSWORD:-eliza_secure_password}@db:5432/eliza
+      POSTGRES_URL: postgresql://eliza:eliza_secure_password@db:5432/eliza
       
       # AI Providers
       OPENAI_API_KEY: ${OPENAI_API_KEY}
@@ -81,13 +81,13 @@ services:
 
   # PostgreSQL Database
   db:
-    image: postgres:15-alpine
+    image: ankane/pgvector:latest
     container_name: elizaos-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: eliza
       POSTGRES_USER: eliza
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-eliza_secure_password}
+      POSTGRES_PASSWORD: eliza_secure_password
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
     
     volumes:
