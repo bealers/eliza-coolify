@@ -54,13 +54,10 @@ services:
     networks:
       - eliza-network
     
-    # Coolify proxy labels (works with both Traefik and Caddy)
+    # Coolify proxy labels
     labels:
       - "coolify.managed=true"
-      - "caddy=${COOLIFY_FQDN}"
-      - "caddy.reverse_proxy={{upstreams 3000}}"
-      - "caddy.tls=internal"
-      - "SERVICE_FQDN_ELIZA_3000=${COOLIFY_FQDN}"
+      - "SERVICE_FQDN_ELIZA_3000"
     
     # Resource limits for production
     deploy:
