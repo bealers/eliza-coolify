@@ -78,24 +78,16 @@ echo ""
 API_PORT=${API_PORT:-3000}
 echo "🔍 API Health Check (port $API_PORT):"
 
-if command -v curl &> /dev/null; then
-    HEALTH_URL="http://localhost:$API_PORT/api/health"
-    
-    if curl -s -f "$HEALTH_URL" -m 10 > /dev/null 2>&1; then
+if [ -f "$PROJECT_DIR/healthcheck.js" ]; then
+    if node "$PROJECT_DIR/healthcheck.js" > /dev/null 2>&1; then
         echo "API Health Check: PASSED"
-        
-        # Try to get health details
-        HEALTH_RESPONSE=$(curl -s "$HEALTH_URL" -m 5 2>/dev/null || echo "")
-        if [ -n "$HEALTH_RESPONSE" ]; then
-            echo "   Response: $HEALTH_RESPONSE"
-        fi
+        echo "   ElizaOS server is responding"
     else
         echo "API Health Check: FAILED"
-        echo "   URL: $HEALTH_URL"
-        echo "   Check if ElizaOS is running and accessible"
+        echo "   ElizaOS server is not responding properly"
     fi
 else
-    echo "⚠️  curl not available - skipping API health check"
+    echo "⚠️  healthcheck.js not found - skipping API health check"
 fi
 
 echo ""

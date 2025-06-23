@@ -97,7 +97,7 @@ services:
     
     # Health check - check if the server is responding
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${API_PORT:-3000}/health"]
+      test: ["CMD", "bun", "/app/healthcheck.js"]
       interval: 30s
       timeout: 10s
       retries: 3
