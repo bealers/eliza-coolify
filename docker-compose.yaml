@@ -54,7 +54,7 @@ services:
     # Coolify proxy labels (Caddy format)
     labels:
       - "coolify.managed=true"
-      - "caddy_0=${COOLIFY_FQDN}"
+      - "caddy_0=https://${COOLIFY_FQDN}"
       - "caddy_0.handle_path=/*"
       - "caddy_0.handle_path.0_reverse_proxy={{upstreams 3000}}"
       - "caddy_0.header=-Server"
