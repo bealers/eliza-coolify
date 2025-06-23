@@ -52,11 +52,11 @@ services:
     networks:
       - eliza-network
     
-    # Coolify service identification labels
+    # Caddy proxy labels for Coolify (flexible domain)
     labels:
-      - "coolify.enabled=true"
-      - "coolify.name=eliza"
-      - "coolify.http.main=3000"
+      - "caddy=${COOLIFY_FQDN}"
+      - "caddy.reverse_proxy={{upstreams 3000}}"
+      - "caddy.tls=internal"
     
     # Resource limits for production
     deploy:
