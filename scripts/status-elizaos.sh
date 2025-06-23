@@ -102,12 +102,12 @@ echo ""
 
 # Environment Check
 echo "🔧 Environment Configuration:"
-ENV_VARS=("NODE_ENV" "API_PORT" "ENABLE_WEB_UI" "LOG_LEVEL" "DATABASE_URL")
+ENV_VARS=("NODE_ENV" "API_PORT" "ENABLE_WEB_UI" "LOG_LEVEL" "POSTGRES_URL")
 AI_VARS=("OPENAI_API_KEY" "ANTHROPIC_API_KEY" "GEMINI_API_KEY")
 
 for var in "${ENV_VARS[@]}"; do
     if [ -n "${!var}" ]; then
-        if [ "$var" = "DATABASE_URL" ]; then
+        if [ "$var" = "POSTGRES_URL" ]; then
             # Hide sensitive database URL details
             DB_TYPE=$(echo "${!var}" | cut -d: -f1)
             echo "   $var: $DB_TYPE://***"

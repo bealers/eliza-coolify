@@ -18,8 +18,7 @@ services:
       ENABLE_WEB_UI: ${ENABLE_WEB_UI:-false}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       
-      # Database
-      DATABASE_URL: postgresql://eliza:${POSTGRES_PASSWORD:-eliza_secure_password}@db:5432/eliza
+      POSTGRES_URL: postgresql://eliza:${POSTGRES_PASSWORD:-eliza_secure_password}@db:5432/eliza
       
       # AI Providers
       OPENAI_API_KEY: ${OPENAI_API_KEY}

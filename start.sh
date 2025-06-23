@@ -7,8 +7,8 @@ set -e
 echo "🚀 Starting ElizaOS Production Server..."
 
 # Check required environment variables
-if [ -z "$DATABASE_URL" ]; then
-    echo "⚠️  Warning: DATABASE_URL not set, using default SQLite"
+if [ -z "$POSTGRES_URL" ]; then
+    echo "⚠️  Warning: POSTGRES_URL not set, using default SQLite"
 fi
 
 # Set default values

@@ -20,7 +20,7 @@ RUN apt-get update && \
 RUN npm install -g pm2@5.3.0
 
 # Install ElizaOS CLI (not globally)
-RUN npm install -g @elizaos/cli@1.0.9
+RUN npm install -g @elizaos/cli@latest
 
 # Create app user
 RUN groupadd -r eliza && useradd -r -g eliza -s /bin/bash eliza
@@ -29,7 +29,9 @@ WORKDIR /app
 
 # Create necessary directories with proper permissions
 RUN mkdir -p /app/characters /app/data /app/logs && \
-    chown -R eliza:eliza /app
+    chown -R eliza:eliza /app && \
+    mkdir -p /home/eliza/.pm2 && \
+    chown -R eliza:eliza /home/eliza/.pm2
 
 # Copy application files
 COPY --chown=eliza:eliza ecosystem.config.js ./

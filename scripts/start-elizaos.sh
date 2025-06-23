@@ -34,7 +34,7 @@ fi
 # Check if ElizaOS CLI is available
 if ! command -v elizaos &> /dev/null; then
     echo "❌ ElizaOS CLI not found. Please install:"
-    echo "   npm install -g @elizaos/cli@1.0.9"
+    echo "   npm install -g @elizaos/cli@latest"
     exit 1
 fi
 
@@ -43,7 +43,7 @@ echo "🔍 Validating environment..."
 
 # Check required environment variables
 REQUIRED_VARS=("NODE_ENV")
-OPTIONAL_VARS=("DATABASE_URL" "OPENAI_API_KEY" "ANTHROPIC_API_KEY" "GEMINI_API_KEY")
+OPTIONAL_VARS=("POSTGRES_URL" "OPENAI_API_KEY" "ANTHROPIC_API_KEY" "GEMINI_API_KEY")
 
 for var in "${REQUIRED_VARS[@]}"; do
     if [ -z "${!var}" ]; then
@@ -56,7 +56,7 @@ echo "✅ Required environment variables are set"
 
 # Check for AI provider keys
 AI_PROVIDER_SET=false
-for var in "${OPTIONAL_VARS[@]:1}"; do  # Skip DATABASE_URL
+for var in "${OPTIONAL_VARS[@]:1}"; do  # Skip POSTGRES_URL
     if [ -n "${!var}" ]; then
         AI_PROVIDER_SET=true
         echo "✅ AI Provider configured: $var"
@@ -70,8 +70,8 @@ if [ "$AI_PROVIDER_SET" = false ]; then
 fi
 
 # Database check
-if [ -z "$DATABASE_URL" ]; then
-    echo "⚠️  Warning: DATABASE_URL not set, ElizaOS will use SQLite"
+if [ -z "$POSTGRES_URL" ]; then
+    echo "⚠️  Warning: POSTGRES_URL not set, ElizaOS will use SQLite"
 else
     echo "✅ External database configured"
 fi

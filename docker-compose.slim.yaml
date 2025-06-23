@@ -20,7 +20,7 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-info}
       
       # External Database (Required)
-      DATABASE_URL: ${DATABASE_URL}
+      POSTGRES_URL: ${POSTGRES_URL}
       
       # AI Providers
       OPENAI_API_KEY: ${OPENAI_API_KEY}
@@ -34,10 +34,6 @@ services:
       DISCORD_PUBLIC_KEY: ${DISCORD_PUBLIC_KEY}
       
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
-      
-      MATTERMOST_URL: ${MATTERMOST_URL}
-      MATTERMOST_TOKEN: ${MATTERMOST_TOKEN}
-      MATTERMOST_USERNAME: ${MATTERMOST_USERNAME}
       
       # Twitter/X Integration
       TWITTER_USERNAME: ${TWITTER_USERNAME}
