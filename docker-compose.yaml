@@ -57,7 +57,12 @@ services:
     # Coolify proxy labels
     labels:
       - "coolify.managed=true"
-      - "SERVICE_FQDN_ELIZA_3000"
+      - "traefik.enable=true"
+      - "traefik.http.routers.eliza.rule=Host(`${COOLIFY_FQDN}`)"
+      - "traefik.http.routers.eliza.entrypoints=websecure"
+      - "traefik.http.routers.eliza.tls=true"
+      - "traefik.http.routers.eliza.tls.certresolver=letsencrypt"
+      - "traefik.http.services.eliza.loadbalancer.server.port=3000"
     
     # Resource limits for production
     deploy:
