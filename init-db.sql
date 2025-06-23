@@ -1,43 +1,31 @@
 -- ElizaOS PostgreSQL Database Initialization
--- This script runs when the PostgreSQL container starts for the first time
+-- Minimal setup - ElizaOS handles its own schema creation
 
--- Create database if it doesn't exist (handled by POSTGRES_DB env var)
--- But we can create additional schemas and tables here
-
--- Set default encoding and locale
+-- Set default encoding and locale for optimal ElizaOS compatibility
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 
--- Create extensions that ElizaOS might need
+-- Create commonly used PostgreSQL extensions
+-- ElizaOS may need these for UUID generation and cryptographic functions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- Create schemas for organization
-CREATE SCHEMA IF NOT EXISTS eliza_core;
-CREATE SCHEMA IF NOT EXISTS eliza_conversations;
-CREATE SCHEMA IF NOT EXISTS eliza_memory;
-CREATE SCHEMA IF NOT EXISTS eliza_analytics;
+-- Grant all privileges to the eliza user on the default public schema
+-- ElizaOS will create its own schemas and tables as needed
+GRANT ALL PRIVILEGES ON SCHEMA public TO eliza;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO eliza;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO eliza;
 
--- Grant permissions to the eliza user
-GRANT ALL PRIVILEGES ON SCHEMA eliza_core TO eliza;
-GRANT ALL PRIVILEGES ON SCHEMA eliza_conversations TO eliza;
-GRANT ALL PRIVILEGES ON SCHEMA eliza_memory TO eliza;
-GRANT ALL PRIVILEGES ON SCHEMA eliza_analytics TO eliza;
+-- Allow eliza user to create new schemas
+ALTER USER eliza CREATEDB;
 
--- Create indexes for common queries (ElizaOS will create tables automatically)
--- These are just optimizations for expected usage patterns
-
--- ElizaOS will handle table creation automatically via its ORM/migrations
--- This script just ensures the database is optimally configured
-
--- Set up connection limits and performance settings
+-- Optimize database settings for ElizaOS workload
 ALTER DATABASE eliza SET max_connections = 100;
-ALTER DATABASE eliza SET shared_preload_libraries = 'pg_stat_statements';
 
 -- Log successful initialization
 DO $$
 BEGIN
-    RAISE NOTICE 'ElizaOS database initialized successfully';
-    RAISE NOTICE 'Schemas created: eliza_core, eliza_conversations, eliza_memory, eliza_analytics';
+    RAISE NOTICE 'ElizaOS database initialized - ready for ElizaOS schema creation';
     RAISE NOTICE 'Extensions enabled: uuid-ossp, pgcrypto';
+    RAISE NOTICE 'ElizaOS will create its own schemas and tables on first run';
 END $$; 
