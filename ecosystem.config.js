@@ -1,8 +1,8 @@
 module.exports = {
   apps: [{
     name: 'elizaos',
-    script: 'npx',
-    args: '@elizaos/cli@latest start --host 0.0.0.0 --port ' + (process.env.API_PORT || 3000),
+    script: './node_modules/.bin/elizaos',
+    args: 'start --host 0.0.0.0 --port ' + (process.env.API_PORT || 3000),
     cwd: '/app',
     instances: 1,
     autorestart: true,

@@ -44,6 +44,7 @@ JWT_SECRET=your-secure-secret
 ### Key Features
 - **API-only mode** - Web UI disabled for production (`ENABLE_WEB_UI=false`)
 - **One agent per container** - Scalable microservice architecture
+- **Local package installation** - ElizaOS CLI installed locally, not globally as root
 
 ---
 

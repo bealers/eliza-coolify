@@ -28,7 +28,12 @@ WORKDIR /app
 RUN mkdir -p /app/characters /app/data /app/logs && \
     chown -R eliza:eliza /app && \
     mkdir -p /home/eliza/.pm2 && \
-    chown -R eliza:eliza /home/eliza/.pm2
+    chown -R eliza:eliza /home/eliza/.pm2 && \
+    mkdir -p /home/eliza/.npm && \
+    chown -R eliza:eliza /home/eliza/.npm
+
+# Copy package.json first for better Docker layer caching
+COPY --chown=eliza:eliza package.json ./
 
 # Copy application files
 COPY --chown=eliza:eliza ecosystem.config.js ./
@@ -48,8 +53,8 @@ RUN chmod +x start.sh healthcheck.js scripts/*.sh
 # Switch to app user
 USER eliza
 
-# Install ElizaOS CLI as the app user to ensure proper permissions
-RUN npm install -g @elizaos/cli@latest
+# Install ElizaOS CLI locally (not globally)
+RUN npm install
 
 # Expose ElizaOS ports
 EXPOSE 3000

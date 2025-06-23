@@ -189,7 +189,7 @@ function checkLogs() {
  * Main health check function
  */
 async function runHealthCheck() {
-  console.log(`\n🏥 ElizaOS Health Check Starting...`);
+  console.log(`\nElizaOS Health Check Starting...`);
   console.log(`   Target: ${HOST}:${API_PORT}`);
   console.log(`   Time: ${new Date().toISOString()}`);
   
@@ -201,11 +201,11 @@ async function runHealthCheck() {
 
   // API Health Check
   if (HEALTH_CONFIG.checks.api) {
-    console.log('\n📡 Checking API...');
+    console.log('\nChecking API...');
     try {
       const apiResult = await checkAPI();
       results.checks.api = apiResult;
-      console.log(`   API Status: ${apiResult.success ? '✅ OK' : '❌ FAILED'}`);
+      console.log(`   API Status: ${apiResult.success ? 'OK' : 'FAILED'}`);
       if (apiResult.success) {
         console.log(`   Endpoint: ${apiResult.result.endpoint} (${apiResult.result.statusCode})`);
       } else if (apiResult.results) {
@@ -215,17 +215,17 @@ async function runHealthCheck() {
       }
     } catch (error) {
       results.checks.api = { success: false, error: error.message };
-      console.log(`   API Status: ❌ FAILED - ${error.message}`);
+      console.log(`   API Status: FAILED - ${error.message}`);
     }
   }
 
   // PM2 Health Check  
   if (HEALTH_CONFIG.checks.pm2) {
-    console.log('\n⚙️  Checking PM2...');
+    console.log('\nChecking PM2...');
     try {
       const pm2Result = await checkPM2();
       results.checks.pm2 = pm2Result;
-      console.log(`   PM2 Status: ${pm2Result.success ? '✅ OK' : '❌ FAILED'}`);
+      console.log(`   PM2 Status: ${pm2Result.success ? 'OK' : 'FAILED'}`);
       if (pm2Result.success) {
         console.log(`   Process: ${pm2Result.status}, Uptime: ${Math.round(pm2Result.uptime/1000)}s, Restarts: ${pm2Result.restarts}`);
         console.log(`   Resources: ${Math.round(pm2Result.memory/1024/1024)}MB RAM, ${pm2Result.cpu}% CPU`);
@@ -234,13 +234,13 @@ async function runHealthCheck() {
       }
     } catch (error) {
       results.checks.pm2 = { success: false, error: error.message };
-      console.log(`   PM2 Status: ❌ FAILED - ${error.message}`);
+      console.log(`   PM2 Status: FAILED - ${error.message}`);
     }
   }
 
   // Logs Health Check
   if (HEALTH_CONFIG.checks.logs) {
-    console.log('\n📝 Checking Logs...');
+    console.log('\nChecking Logs...');
     try {
       const logsResult = checkLogs();
       results.checks.logs = logsResult;
@@ -248,17 +248,17 @@ async function runHealthCheck() {
       Object.entries(logsResult.files).forEach(([filename, info]) => {
         if (info.exists) {
           const age = Math.round(info.lastModified / 1000);
-          console.log(`   ${filename}: ${info.size} bytes, ${age}s ago ${info.hasContent ? '📄' : '📭'}`);
+          console.log(`   ${filename}: ${info.size} bytes, ${age}s ago ${info.hasContent ? '[HAS CONTENT]' : '[EMPTY]'}`);
           if (info.preview && info.hasContent) {
             console.log(`     Latest: ${info.preview.split('\n')[0].substring(0, 80)}`);
           }
         } else {
-          console.log(`   ${filename}: ❌ Missing`);
+          console.log(`   ${filename}: Missing`);
         }
       });
     } catch (error) {
       results.checks.logs = { success: false, error: error.message };
-      console.log(`   Logs Status: ❌ FAILED - ${error.message}`);
+      console.log(`   Logs Status: FAILED - ${error.message}`);
     }
   }
 
@@ -268,7 +268,7 @@ async function runHealthCheck() {
     results.checks[check] && results.checks[check].success
   );
 
-  console.log(`\n🎯 Overall Health: ${results.overall ? '✅ HEALTHY' : '❌ UNHEALTHY'}`);
+  console.log(`\nOverall Health: ${results.overall ? 'HEALTHY' : 'UNHEALTHY'}`);
   
   return results;
 }
@@ -278,16 +278,16 @@ if (require.main === module) {
   runHealthCheck()
     .then(results => {
       if (results.overall) {
-        console.log('\n✅ Health check passed');
+        console.log('\nHealth check passed');
         process.exit(0);
       } else {
-        console.log('\n❌ Health check failed');
+        console.log('\nHealth check failed');
         console.log('\nDebug info:', JSON.stringify(results, null, 2));
         process.exit(1);
       }
     })
     .catch(error => {
-      console.error('\n💥 Health check crashed:', error);
+      console.error('\nHealth check crashed:', error);
       process.exit(1);
     });
 }
