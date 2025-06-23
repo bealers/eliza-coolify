@@ -4,7 +4,7 @@ set -e
 # ElizaOS Production Startup Script
 # Handles UI enable/disable and PM2 process management
 
-echo "🚀 Starting ElizaOS Production Server..."
+echo "Starting ElizaOS Production Server..."
 
 # Check required environment variables
 if [ -z "$POSTGRES_URL" ]; then
@@ -46,18 +46,18 @@ if [ -d "/app/characters" ] && [ "$(ls -A /app/characters)" ]; then
     for file in /app/characters/*.json; do
         if [ -f "$file" ]; then
             if ! node -p "JSON.parse(require('fs').readFileSync('$file', 'utf8'))" > /dev/null 2>&1; then
-                echo "❌ Invalid JSON in $file"
+                echo "Invalid JSON in $file"
                 exit 1
             fi
         fi
     done
-    echo "✅ All character files validated"
+    echo "All character files validated"
 else
     echo "ℹ️  No character files found, using default configuration"
 fi
 
 # Use our structured PM2 management
-echo "🔧 Using structured PM2 management..."
+echo "Using structured PM2 management..."
 
 # Check if PM2 is already running
 if pm2 list | grep -q "elizaos"; then
@@ -73,7 +73,7 @@ pm2 list
 pm2 logs elizaos --lines 10
 
 echo ""
-echo "🎯 Management commands available:"
+echo "Management commands available:"
 echo "   ./scripts/start-elizaos.sh    # Start/restart ElizaOS"
 echo "   ./scripts/stop-elizaos.sh     # Stop ElizaOS gracefully"
 echo "   ./scripts/status-elizaos.sh   # Show detailed status"
@@ -82,5 +82,5 @@ echo "   pm2 monit                    # Monitor resources"
 echo ""
 
 # Keep the container running by following PM2 logs
-echo "📋 Following PM2 logs (Ctrl+C to stop)..."
+echo "Following PM2 logs (Ctrl+C to stop)..."
 exec pm2 logs elizaos --raw 

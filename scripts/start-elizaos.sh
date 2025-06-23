@@ -7,8 +7,8 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
-echo "🚀 ElizaOS Production Start Script"
-echo "📁 Project Directory: $PROJECT_DIR"
+echo "ElizaOS Production Start Script"
+echo "Project Directory: $PROJECT_DIR"
 
 # Function to check if we're in a container
 is_container() {
@@ -26,14 +26,14 @@ fi
 
 # Check if PM2 is available
 if ! command -v pm2 &> /dev/null; then
-    echo "❌ PM2 not found. Please install PM2:"
+    echo "PM2 not found. Please install PM2:"
     echo "   npm install -g pm2"
     exit 1
 fi
 
 # Check if ElizaOS CLI is available
 if ! command -v elizaos &> /dev/null; then
-    echo "❌ ElizaOS CLI not found. Please install:"
+    echo "ElizaOS CLI not found. Please install:"
     echo "   npm install -g @elizaos/cli@latest"
     exit 1
 fi
@@ -47,19 +47,19 @@ OPTIONAL_VARS=("POSTGRES_URL" "OPENAI_API_KEY" "ANTHROPIC_API_KEY" "GEMINI_API_K
 
 for var in "${REQUIRED_VARS[@]}"; do
     if [ -z "${!var}" ]; then
-        echo "❌ Required environment variable $var is not set"
+        echo "Required environment variable $var is not set"
         exit 1
     fi
 done
 
-echo "✅ Required environment variables are set"
+echo "Required environment variables are set"
 
 # Check for AI provider keys
 AI_PROVIDER_SET=false
 for var in "${OPTIONAL_VARS[@]:1}"; do  # Skip POSTGRES_URL
     if [ -n "${!var}" ]; then
         AI_PROVIDER_SET=true
-        echo "✅ AI Provider configured: $var"
+        echo "AI Provider configured: $var"
         break
     fi
 done
@@ -73,7 +73,7 @@ fi
 if [ -z "$POSTGRES_URL" ]; then
     echo "⚠️  Warning: POSTGRES_URL not set, ElizaOS will use SQLite"
 else
-    echo "✅ External database configured"
+    echo "External database configured"
 fi
 
 # Ensure log directory exists
@@ -87,12 +87,12 @@ if [ -d "$PROJECT_DIR/characters" ] && [ "$(ls -A "$PROJECT_DIR/characters")" ];
     for file in "$PROJECT_DIR/characters"/*.json; do
         if [ -f "$file" ]; then
             if ! node -p "JSON.parse(require('fs').readFileSync('$file', 'utf8'))" > /dev/null 2>&1; then
-                echo "❌ Invalid JSON in $(basename "$file")"
+                echo "Invalid JSON in $(basename "$file")"
                 exit 1
             fi
         fi
     done
-    echo "✅ All character files validated"
+    echo "All character files validated"
 else
     echo "ℹ️  No custom character files found, using default configuration"
 fi
@@ -109,7 +109,7 @@ if pm2 list | grep -q "elizaos.*online"; then
         echo "♻️  Restarting ElizaOS..."
         pm2 restart elizaos
     else
-        echo "✅ ElizaOS continues running"
+        echo "ElizaOS continues running"
         exit 0
     fi
 else
@@ -120,7 +120,7 @@ else
         cd "$PROJECT_DIR"
         pm2 start ecosystem.config.js
     else
-        echo "❌ ecosystem.config.js not found"
+        echo "ecosystem.config.js not found"
         exit 1
     fi
 fi
@@ -133,12 +133,12 @@ echo "📊 ElizaOS Status:"
 pm2 list
 
 # Show recent logs
-echo "📋 Recent logs (last 10 lines):"
+echo "Recent logs (last 10 lines):"
 pm2 logs elizaos --lines 10 --nostream
 
-echo "✅ ElizaOS started successfully!"
+echo "ElizaOS started successfully"
 echo ""
-echo "📊 Management commands:"
+echo "Management commands:"
 echo "   pm2 list                    # Show process status"
 echo "   pm2 logs elizaos           # View logs"
 echo "   pm2 monit                  # Monitor resources"

@@ -30,27 +30,27 @@ echo ""
 
 # Check if PM2 is available
 if ! command -v pm2 &> /dev/null; then
-    echo "❌ PM2 not found"
+    echo "PM2 not found"
     exit 1
 fi
 
 # Check if ElizaOS CLI is available
 if command -v elizaos &> /dev/null; then
-    echo "✅ ElizaOS CLI: Available"
+    echo "ElizaOS CLI: Available"
     ELIZAOS_VERSION=$(elizaos --version 2>/dev/null || echo "unknown")
     echo "   Version: $ELIZAOS_VERSION"
 else
-    echo "❌ ElizaOS CLI: Not found"
+    echo "ElizaOS CLI: Not found"
 fi
 
 echo ""
 
 # PM2 Status
-echo "📋 PM2 Process Status:"
+echo "PM2 Process Status:"
 if pm2 list | grep -q "elizaos"; then
     # ElizaOS process exists
     if pm2 list | grep -q "elizaos.*online"; then
-        echo "✅ ElizaOS: Running"
+        echo "ElizaOS: Running"
         
         # Get process details
         PM2_INFO=$(pm2 show elizaos 2>/dev/null || echo "")
@@ -82,7 +82,7 @@ if command -v curl &> /dev/null; then
     HEALTH_URL="http://localhost:$API_PORT/api/health"
     
     if curl -s -f "$HEALTH_URL" -m 10 > /dev/null 2>&1; then
-        echo "✅ API Health Check: PASSED"
+        echo "API Health Check: PASSED"
         
         # Try to get health details
         HEALTH_RESPONSE=$(curl -s "$HEALTH_URL" -m 5 2>/dev/null || echo "")
@@ -90,7 +90,7 @@ if command -v curl &> /dev/null; then
             echo "   Response: $HEALTH_RESPONSE"
         fi
     else
-        echo "❌ API Health Check: FAILED"
+        echo "API Health Check: FAILED"
         echo "   URL: $HEALTH_URL"
         echo "   Check if ElizaOS is running and accessible"
     fi
@@ -101,7 +101,7 @@ fi
 echo ""
 
 # Environment Check
-echo "🔧 Environment Configuration:"
+echo "Environment Configuration:"
 ENV_VARS=("NODE_ENV" "API_PORT" "ENABLE_WEB_UI" "LOG_LEVEL" "POSTGRES_URL")
 AI_VARS=("OPENAI_API_KEY" "ANTHROPIC_API_KEY" "GEMINI_API_KEY")
 
@@ -124,7 +124,7 @@ AI_PROVIDER_FOUND=false
 echo "   AI Providers:"
 for var in "${AI_VARS[@]}"; do
     if [ -n "${!var}" ]; then
-        echo "   ✅ $var: configured"
+        echo "   $var: configured"
         AI_PROVIDER_FOUND=true
     else
         echo "   ⚪ $var: not set"
@@ -160,7 +160,7 @@ done
 echo ""
 
 # Character Files Status
-echo "🎭 Character Configuration:"
+echo "Character Configuration:"
 if [ -d "$PROJECT_DIR/characters" ] && [ "$(ls -A "$PROJECT_DIR/characters")" ]; then
     echo "   Directory: $PROJECT_DIR/characters"
     echo "   Files:"
@@ -192,7 +192,7 @@ fi
 echo ""
 
 # Quick Actions
-echo "🎯 Quick Actions:"
+echo "Quick Actions:"
 echo "   Start:   ./scripts/start-elizaos.sh"
 echo "   Stop:    ./scripts/stop-elizaos.sh"
 echo "   Logs:    pm2 logs elizaos"
@@ -200,4 +200,4 @@ echo "   Monitor: pm2 monit"
 echo "   Restart: pm2 restart elizaos"
 
 echo ""
-echo "✅ Status check completed" 
+echo "Status check completed" 

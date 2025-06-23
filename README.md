@@ -7,12 +7,14 @@ Production-ready ElizaOS deployment tested on Coolify but should work on any Doc
 ## Quick Coolify Deployment
 
 1. **Point Coolify** to this repository (public Github deploy)
-2. **Use `docker-compose.yaml`** as compose file (includes PostgreSQL)
-3. **Set environment variables**: e.g. `OPENAI_API_KEY`
-4. **Coolify deploys**
-5. **Manage** with `./scripts/status-elizaos.sh`
+2. **Build Pack** `Docker Compose`
+3. **Use `docker-compose.yaml`** as compose file (includes PostgreSQL)
+4. **Set environment variables using the UI**: e.g. `OPENAI_API_KEY`
+5. **Coolify deploys**
+6. **Manage** with `./scripts/status-elizaos.sh`
 
-### **Required Environment Variables:**
+### Required Environment Variables
+
 ```bash
 # AI Provider (REQUIRED - choose one)
 OPENAI_API_KEY=sk-your-openai-key-here
@@ -27,6 +29,7 @@ ENABLE_WEB_UI=false
 LOG_LEVEL=info
 JWT_SECRET=your-secure-secret
 ```
+
 ---
 
 ## Architecture
@@ -34,7 +37,7 @@ JWT_SECRET=your-secure-secret
 ### Core Components
 - **ElizaOS CLI** - Built with `@elizaos/cli@latest` (published package approach)
 - **PM2 Process Manager** - Auto-restart, monitoring, resource limits  
-- **PostgreSQL Database** - External database (Coolify managed recommended)
+- **PostgreSQL Database** - Internal database (auto-configured) or external
 - **Health Monitoring** - API endpoints + PM2 status tracking
 - **Security Hardening** - Non-root user, proper permissions, CORS
 
@@ -48,11 +51,10 @@ JWT_SECRET=your-secure-secret
 
 ### Option 1: Advanced Coolify (External PostgreSQL)
 
-**For shared/existing PostgreSQL instances:**
+For shared/existing PostgreSQL instances:
 1. Create or use existing PostgreSQL database
 2. Use `docker-compose.slim.yaml` as compose file  
 3. Set required environment variables: `POSTGRES_URL`, `OPENAI_API_KEY`
-
 
 ### Option 2: Local Testing (Full Stack)
 
@@ -74,7 +76,7 @@ docker-compose -f docker-compose.slim.yaml up -d
 
 ---
 
-## 🔧 PM2 Management
+## PM2 Management
 
 ### Management Scripts
 
@@ -119,14 +121,14 @@ docker exec <container> pm2 monit
 
 ---
 
-## 📋 Environment Configuration
+## Environment Configuration
 
 ### Required Variables
 ```bash
 # Database (REQUIRED)
 POSTGRES_URL=postgresql://username:password@hostname:5432/database_name
 
-# Inference Provider
+# AI Provider (REQUIRED - choose one or more)
 OPENAI_API_KEY=sk-your-openai-api-key
 ANTHROPIC_API_KEY=sk-ant-your-anthropic-key-here
 GEMINI_API_KEY=your-gemini-key-here
@@ -141,17 +143,16 @@ ENABLE_WEB_UI=false  # UI disabled by default in production
 LOG_LEVEL=info
 ```
 
-
 ---
 
-## 🎭 Character Configuration
+## Character Configuration
 
 ### Default Character
-The included `production-agent.character.json` provides a sample baseline for deployment testing, 
+The included `characters/server-bod.character.json` provides a sample baseline for deployment testing.
 
 ---
 
-## 🔄 Scaling
+## Scaling
 
 ### Horizontal Scaling
 Deploy multiple instances with different configurations:
@@ -164,10 +165,11 @@ docker-compose -f docker-compose.slim.yaml up -d
 # Agent 2 - Telegram  
 TELEGRAM_BOT_TOKEN=bot-2-token
 docker-compose -f docker-compose.slim.yaml -p eliza-telegram up -d
+```
 
 ---
 
-## 📚 References
+## References
 
 - [ElizaOS Documentation](https://eliza.how/docs/intro)
 - [ElizaOS GitHub](https://github.com/elizaOS/eliza)
