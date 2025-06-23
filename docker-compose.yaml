@@ -9,7 +9,7 @@ services:
     container_name: elizaos-prod
     restart: unless-stopped
     ports:
-      - "3000"
+      - "3000:3000"
       - "50000-50100:50000-50100/udp"
     expose:
       - "3000"
