@@ -32,6 +32,79 @@ LOG_LEVEL=info
 JWT_SECRET=your-secure-secret
 ```
 
+---
+
+## Troubleshooting: Local vs Coolify Deployment Differences
+
+### Why It Worked Locally But Failed on Coolify
+
+The main differences between local testing and Coolify deployment that can cause issues:
+
+#### 1. **Bun Runtime Path Issues**
+- **Local**: Docker Desktop may run containers with different user privileges
+- **Coolify**: Stricter container security and user context
+- **Fix**: Global bun symlink in Dockerfile (`ln -sf /root/.bun/bin/bun /usr/local/bin/bun`)
+
+#### 2. **PM2 Interpreter Configuration**
+- **Local**: May fall back to Node.js when bun path is incorrect
+- **Coolify**: Stricter runtime environment
+- **Fix**: Use `interpreter: 'bun'` in `ecosystem.config.js` instead of absolute paths
+
+#### 3. **ElizaOS CLI Installation Method**
+- **Local**: Might use global installations or different package resolution
+- **Coolify**: Uses only local `node_modules/.bin/elizaos`
+- **Fix**: Use `script: './node_modules/.bin/elizaos'` in PM2 config
+
+#### 4. **Container Networking**
+- **Local**: Docker networking may be more permissive
+- **Coolify**: Stricter network policies and proxy configuration
+- **Fix**: Ensure `HOST: '0.0.0.0'` in environment variables
+
+### Common Error Patterns
+
+**PM2 Process Errored (Status: errored, Restarts: 9+)**
+```bash
+# Symptoms: Empty logs, ECONNREFUSED health checks
+# Cause: ElizaOS CLI not starting due to interpreter issues
+# Fix: Check ecosystem.config.js uses correct bun path and elizaos binary
+```
+
+**ECONNREFUSED on Health Check**
+```bash
+# Symptoms: API not responding on port 3000
+# Cause: Process not starting or binding to wrong interface
+# Fix: Verify HOST=0.0.0.0 and process is actually running
+```
+
+**Bun Command Not Found**
+```bash
+# Symptoms: PM2 can't find bun interpreter
+# Cause: Bun not in PATH for eliza user
+# Fix: Global bun symlink in Dockerfile
+```
+
+### Quick Fixes
+
+1. **Rebuild with Fixed Dockerfile**:
+   ```bash
+   # The Dockerfile now includes global bun symlink
+   # Redeploy from Coolify will use the updated image
+   ```
+
+2. **Check PM2 Configuration**:
+   ```javascript
+   // ecosystem.config.js should use:
+   interpreter: 'bun',
+   script: './node_modules/.bin/elizaos',
+   ```
+
+3. **Verify Environment Variables**:
+   ```bash
+   # Ensure these are set in Coolify:
+   NODE_ENV=production
+   HOST=0.0.0.0
+   API_PORT=3000
+   ```
 
 ---
 

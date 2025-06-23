@@ -23,6 +23,9 @@ RUN apt-get update && \
 # Create app user
 RUN groupadd -r eliza && useradd -r -g eliza -s /bin/bash eliza
 
+# Create a global symlink for bun so it's available to all users
+RUN ln -sf /root/.bun/bin/bun /usr/local/bin/bun
+
 WORKDIR /app
 
 # Create necessary directories with proper permissions
@@ -32,10 +35,6 @@ RUN mkdir -p /app/characters /app/data /app/logs && \
     chown -R eliza:eliza /home/eliza/.pm2 && \
     mkdir -p /home/eliza/.npm && \
     chown -R eliza:eliza /home/eliza/.npm
-
-# Add both Bun and Node.js to PATH for eliza user
-RUN echo 'export PATH="/root/.bun/bin:$PATH"' >> /home/eliza/.bashrc && \
-    chown eliza:eliza /home/eliza/.bashrc
 
 # Copy package.json first for better Docker layer caching
 COPY --chown=eliza:eliza package.json ./
