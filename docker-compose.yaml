@@ -45,7 +45,7 @@ services:
       - eliza_data:/app/data
       - eliza_logs:/app/logs
       # Character files (optional)
-      - ./characters:/app/characters:ro
+      - ./config/characters:/app/characters:ro
     
     depends_on:
       db:
