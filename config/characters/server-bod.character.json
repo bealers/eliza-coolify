@@ -4,7 +4,7 @@
     "@elizaos/plugin-bootstrap",
     "@elizaos/plugin-openai"
   ],
-  "clients": [],
+  
   "secrets": {},
   "settings": {
     "model": "gpt-4o-mini",
