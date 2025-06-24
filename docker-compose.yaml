@@ -20,6 +20,9 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-info}
       HOST: "0.0.0.0"
       
+      # Coolify magic environment variable for port detection
+      SERVICE_FQDN_ELIZA_3000: ""
+      
       POSTGRES_URL: postgresql://eliza:eliza_secure_password@db:5432/eliza
       
       # AI Providers
@@ -49,12 +52,9 @@ services:
       db:
         condition: service_healthy
     
-    # Force Traefik-only proxy with explicit port
+    # Clean Coolify configuration - let auto-detection work
     labels:
       - "coolify.managed=true"
-      - "traefik.enable=true"
-      - "traefik.http.services.eliza.loadbalancer.server.port=3000"
-      - "caddy.enable=false"
     
     # Resource limits for production
     deploy:
