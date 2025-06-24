@@ -49,10 +49,12 @@ services:
       db:
         condition: service_healthy
     
-    # Force port detection with explicit Traefik labels
+    # Force Traefik-only proxy with explicit port
     labels:
       - "coolify.managed=true"
+      - "traefik.enable=true"
       - "traefik.http.services.eliza.loadbalancer.server.port=3000"
+      - "caddy.enable=false"
     
     # Resource limits for production
     deploy:
