@@ -44,8 +44,6 @@ services:
       # Persistent data storage
       - eliza_data:/app/data
       - eliza_logs:/app/logs
-      # Character files (optional)
-      - ./config/characters:/app/characters:ro
     
     depends_on:
       db:
@@ -55,7 +53,6 @@ services:
     labels:
       - "coolify.managed=true"
       - "traefik.enable=true"
-      - "caddy.enable=false"
       - "traefik.http.routers.elizaos.rule=Host(`${COOLIFY_FQDN}`)"
       - "traefik.http.routers.elizaos.tls=true"
       - "traefik.http.routers.elizaos.tls.certresolver=letsencrypt"
@@ -102,7 +99,7 @@ services:
       # Copy the init script instead of mounting as volume to avoid directory issues
       - ./init-db.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     
-    # Security: Don't expose PostgreSQL port externally in production
+    # Don't expose PostgreSQL port externally in prod
     # ports:
     #   - "5432:5432"
     
@@ -132,7 +129,4 @@ volumes:
     driver: local
   # redis_data:
   #   driver: local
-
-# Let Coolify manage networks automatically
-
  
