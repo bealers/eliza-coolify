@@ -118,7 +118,7 @@ echo ""
 echo "Running initial health check in 10 seconds..."
 sleep 10
 
-if node /app/healthcheck.js; then
+if node /app/scripts/healthcheck.js; then
     echo "Health check passed - service is responding"
 else
     echo "Health check failed - investigating..."
