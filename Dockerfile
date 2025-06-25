@@ -68,4 +68,4 @@ HEALTHCHECK --interval=30s --timeout=15s --start-period=90s --retries=3 \
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 
 # Start ElizaOS using PM2 through our startup script
-CMD ["./start.sh"] 
+CMD ["./scripts/start.sh"] 
