@@ -9,7 +9,7 @@ module.exports = {
     watch: false,
     max_memory_restart: '2G',
     env: {
-      NODE_ENV: 'development',
+      NODE_ENV: process.env.NODE_ENV || 'development',
       API_PORT: process.env.API_PORT || 3000,
       LOG_LEVEL: process.env.LOG_LEVEL || 'debug',
       HOST: '0.0.0.0',
