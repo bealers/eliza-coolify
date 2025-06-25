@@ -40,9 +40,9 @@ COPY --chown=eliza:eliza package.json ./
 RUN bun install
 
 # Copy application files
-COPY --chown=eliza:eliza ecosystem.config.js ./
-COPY --chown=eliza:eliza start.sh ./
-COPY --chown=eliza:eliza healthcheck.js ./
+COPY --chown=eliza:eliza config/ecosystem.config.js ./config/
+COPY --chown=eliza:eliza scripts/start.sh ./scripts/
+COPY --chown=eliza:eliza scripts/healthcheck.js ./scripts/
 
 # Copy management scripts
 COPY --chown=eliza:eliza scripts/ ./scripts/
@@ -51,7 +51,7 @@ COPY --chown=eliza:eliza scripts/ ./scripts/
 COPY --chown=eliza:eliza config/ ./config/
 
 # Make scripts executable
-RUN chmod +x start.sh healthcheck.js scripts/*.sh
+RUN chmod +x scripts/*.sh scripts/*.js
 
 # Switch to app user for security
 USER eliza
@@ -62,7 +62,7 @@ EXPOSE 50000-50100/udp
 
 # Health check with comprehensive monitoring
 HEALTHCHECK --interval=30s --timeout=15s --start-period=90s --retries=3 \
-    CMD bun /app/healthcheck.js || exit 1
+    CMD bun /app/scripts/healthcheck.js || exit 1
 
 # Use dumb-init for proper signal handling
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]

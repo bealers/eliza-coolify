@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "elizaos start",
-    "health": "bun healthcheck.js",
+    "health": "bun scripts/healthcheck.js",
     "pm2:start": "./scripts/start-elizaos.sh",
     "pm2:stop": "./scripts/stop-elizaos.sh",
     "pm2:status": "./scripts/status-elizaos.sh"
@@ -13,7 +13,8 @@
   "dependencies": {
     "@elizaos/cli": "latest",
     "@elizaos/core": "latest",
-    "pm2": "^5.4.3"
+    "pm2": "^5.4.3",
+    "socket.io-client": "^4.8.1"
   },
   "engines": {
     "node": ">=23.0.0"

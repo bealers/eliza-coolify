@@ -116,11 +116,11 @@ else
     echo "🆕 Starting ElizaOS with PM2..."
     
     # Start with ecosystem config
-    if [ -f "$PROJECT_DIR/ecosystem.config.js" ]; then
+    if [ -f "$PROJECT_DIR/config/ecosystem.config.js" ]; then
         cd "$PROJECT_DIR"
-        pm2 start ecosystem.config.js
+        pm2 start config/ecosystem.config.js
     else
-        echo "ecosystem.config.js not found"
+        echo "config/ecosystem.config.js not found"
         exit 1
     fi
 fi
