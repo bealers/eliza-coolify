@@ -57,7 +57,7 @@ services:
       db:
         condition: service_healthy
     
-    # Clean Coolify configuration - let auto-detection work
+    # Coolify auto-detection magic
     labels:
       - "coolify.managed=true"
     
