@@ -1,16 +1,14 @@
-# Development and personal files
+# Development, keep repo clean
 .bealers/
 .env
 doc/
 .cursor/
 .taskmaster/
-
-# Runtime database and cache files
 .eliza/
 *.db
 *.sqlite*
 
-# Dependencies
+
 node_modules/
 bun.lockb
 
@@ -57,4 +55,5 @@ data/
 
 # PM2 files
 ecosystem.config.js.backup
-pm2.log 
+pm2.log doc/
+.bealers
