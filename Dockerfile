@@ -45,7 +45,7 @@ RUN chown -R eliza:eliza /app/node_modules /app/package.json /app/bun.lock* || t
 # Copy application files
 COPY --chown=eliza:eliza config/ecosystem.config.js ./config/
 COPY --chown=eliza:eliza scripts/start.sh ./scripts/
-COPY --chown=eliza:eliza scripts/healthcheck.js ./scripts/
+COPY --chown=eliza:eliza testing/health/healthcheck.js ./scripts/
 
 # Copy management scripts
 COPY --chown=eliza:eliza scripts/ ./scripts/
