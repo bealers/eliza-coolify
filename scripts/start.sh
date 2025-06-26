@@ -127,9 +127,15 @@ echo "Using structured PM2 management..."
 
 # Stop any existing PM2 processes first
 if $PM2_BIN list | grep -q "elizaos"; then
-    echo "Stopping existing PM2 process..."
-    $PM2_BIN stop elizaos || echo "Could not stop existing process"
-    $PM2_BIN delete elizaos || echo "Could not delete existing process"
+    echo "Stopping existing ElizaOS process..."
+    $PM2_BIN stop elizaos || echo "Could not stop existing ElizaOS process"
+    $PM2_BIN delete elizaos || echo "Could not delete existing ElizaOS process"
+fi
+
+if $PM2_BIN list | grep -q "elizaos-proxy"; then
+    echo "Stopping existing proxy process..."
+    $PM2_BIN stop elizaos-proxy || echo "Could not stop existing proxy process"
+    $PM2_BIN delete elizaos-proxy || echo "Could not delete existing proxy process"
 fi
 
 # Clear old logs
@@ -147,16 +153,21 @@ echo "PM2 Status:"
 $PM2_BIN list
 
 # Show initial logs
-echo "Initial Logs:"
-$PM2_BIN logs elizaos --lines 20 --nostream || echo "Could not display logs"
+echo "Initial Logs (Proxy):"
+$PM2_BIN logs elizaos-proxy --lines 10 --nostream || echo "Could not display proxy logs"
+echo ""
+echo "Initial Logs (ElizaOS):"
+$PM2_BIN logs elizaos --lines 10 --nostream || echo "Could not display ElizaOS logs"
 
 echo ""
 echo "Management commands available:"
-echo "   ./scripts/start-elizaos.sh    # Start/restart ElizaOS"
-echo "   ./scripts/stop-elizaos.sh     # Stop ElizaOS gracefully"
-echo "   ./scripts/status-elizaos.sh   # Show detailed status"
-echo "   $PM2_BIN logs elizaos        # View logs"
-echo "   $PM2_BIN monit               # Monitor resources"
+echo "   ./scripts/start-elizaos.sh         # Start/restart all services"
+echo "   ./scripts/stop-elizaos.sh          # Stop all services gracefully"
+echo "   ./scripts/status-elizaos.sh        # Show detailed status"
+echo "   $PM2_BIN logs elizaos-proxy       # View proxy logs"
+echo "   $PM2_BIN logs elizaos             # View ElizaOS logs"
+echo "   $PM2_BIN logs --raw               # View all logs"
+echo "   $PM2_BIN monit                    # Monitor resources"
 echo ""
 
 # Test if the service is responding
