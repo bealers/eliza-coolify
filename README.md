@@ -1,125 +1,57 @@
-# ElizaOS Coolify Production Deployment
+# Elizify - Just Works Eliza Prod Deployments
 
-Production-ready ElizaOS deployment configuration for Coolify, Docker, and self-hosted environments.
+Production-ready ElizaOS deployment that works across multiple cloud providers.
 
 ---
 
-## Quick Coolify Deployment
+## Choose Your Platform
 
-1. **Point Coolify** to this repository (public Github deploy)
-2. **Build Pack** `Docker Compose`
-3. **Use `docker-compose.yaml`** as compose file (includes PostgreSQL)
-4. **Set environment variables using the UI**: e.g. `OPENAI_API_KEY`
-5. **Coolify deploys**
-6. **Manage** with `./scripts/status-elizaos.sh`
+| Platform | Setup Time | Cost | Status |
+|----------|------------|------|--------|
+| **Custom** | 10 minutes | Just Docker | [Deploy Guide](providers/custom/README.md) |
+| **Coolify** | 5 minutes | Self-hosted | [Deploy Guide](providers/coolify/README.md) |
+| **Railway** | 2 minutes | $5+/month | Coming Soon |
+| **Render** | 3 minutes | $7+/month | Coming Soon |
+| **DigitalOcean** | 10 minutes | $12+/month | Coming Soon |
 
-Assuming you already have wildcard DNS and SSL setup so `*.your-coolify.tld.com` works (via the built in proxy) then you can set the URL to be `https://your-character.your-coolify.tld.com` and test the web UI. 
+**First time?** Start with **Custom** for full control or **Coolify** for managed self-hosting.
 
+---
 
-### Required Environment Variables
+## Quick Deploy Workflow
 
+### 1. Fork & Customize
 ```bash
-# AI Provider (REQUIRED - choose one)
-OPENAI_API_KEY=sk-your-openai-key-here
-# OR ANTHROPIC_API_KEY=sk-ant-your-key
-# OR GEMINI_API_KEY=your-gemini-key
+# 1. Fork this repository to your GitHub account
+# 2. Clone your fork
+git clone https://github.com/YOUR-USERNAME/elizify.git
+cd elizify
 
-# Database is auto-configured with internal PostgreSQL
+# 3. Add your character files to config/characters/
+cp your-character.json config/characters/
+# Edit config/characters/your-character.json
 
-# Production Settings (optional)
-NODE_ENV=production
-LOG_LEVEL=info
-JWT_SECRET=your-secure-secret
+# 4. Push your customizations
+git add config/characters/
+git commit -m "Add custom character"
+git push
 ```
 
----
+### 2. Deploy Your Fork
 
-
-## Architecture
-
-### Core Components
-- **ElizaOS CLI** - Built with `@elizaos/cli@latest` (published package approach)
-- **PM2 Process Manager** - Auto-restart, monitoring, resource limits  
-- **PostgreSQL Database** - Internal database (auto-configured) or external
-- **Health Monitoring** - API endpoints + PM2 status tracking
-- **Security Hardening** - Non-root user, proper permissions, CORS
-
-### Key Features
-- **Production-ready** - Optimized for server deployment
-- **One agent per container** - Scalable microservice architecture
-- **Local package installation** - ElizaOS CLI installed locally, not globally as root
-
----
-
-## Alternative Deployment Options
-
-### Option 1: Advanced Coolify (External PostgreSQL)
-
-For shared/existing PostgreSQL instances:
-1. Create or use existing PostgreSQL database
-2. Use `docker-compose.slim.yaml` as compose file  
-3. Set required environment variables: `POSTGRES_URL`, `OPENAI_API_KEY`
-
-### Option 2: Local Testing (Full Stack)
-
+#### Custom (Docker Compose)
 ```bash
-# Quick setup with internal PostgreSQL (same as Coolify quick deploy)
 cp env.example .env
-# Edit .env with your AI provider API key
+# Edit .env with your OPENAI_API_KEY and CHARACTER_FILE
 docker-compose up -d
 ```
 
-### Option 3: Production (External Database)
+#### Coolify
+1. Point Coolify at **your forked repository**
+2. Add environment variables (see below)
+3. Deploy
 
-```bash
-# External PostgreSQL deployment
-cp env.example .env
-# Set POSTGRES_URL and other production variables
-docker-compose -f docker-compose.slim.yaml up -d
-```
-
----
-
-## Process Management
-
-**Inside Container:**
-```bash
-# Comprehensive status check
-./scripts/status-elizaos.sh
-
-# Start/restart ElizaOS
-./scripts/start-elizaos.sh
-
-# Stop ElizaOS gracefully
-./scripts/stop-elizaos.sh
-```
-
-**Outside Container:**
-```bash
-# Status check
-docker exec <container> ./scripts/status-elizaos.sh
-
-# Start/restart
-docker exec <container> ./scripts/start-elizaos.sh
-
-# Stop gracefully
-docker exec <container> ./scripts/stop-elizaos.sh
-```
-
-### Direct PM2 Commands
-```bash
-# View status
-docker exec <container> pm2 list
-
-# View logs
-docker exec <container> pm2 logs elizaos
-
-# Restart application
-docker exec <container> pm2 restart elizaos
-
-# Monitor resources
-docker exec <container> pm2 monit
-```
+Your ElizaOS agent will be running with your custom character.
 
 ---
 
@@ -127,56 +59,166 @@ docker exec <container> pm2 monit
 
 ### Required Variables
 ```bash
-# Database (REQUIRED)
-POSTGRES_URL=postgresql://username:password@hostname:5432/database_name
+# AI Provider API Key (required)
+OPENAI_API_KEY=sk-your-openai-key-here
 
-# AI Provider (REQUIRED - choose one or more)
-OPENAI_API_KEY=sk-your-openai-api-key
-ANTHROPIC_API_KEY=sk-ant-your-anthropic-key-here
-GEMINI_API_KEY=your-gemini-key-here
-```
+# Character Configuration
+CHARACTER_FILE=your-character.json
+CHARACTER_NAME=Your Agent Name
 
-### Production Settings
-```bash
-# Core Configuration
+# Database (auto-configured in most platforms)
+DATABASE_URL=postgresql://user:pass@host:5432/dbname
+
+# Server Configuration  
 NODE_ENV=production
-API_PORT=3000
-HOST=0.0.0.0  # Essential for Docker networking
 LOG_LEVEL=info
 ```
 
----
-
-## Character Configuration
-
-### Default Character
-The included `characters/server-bod.character.json` provides a sample baseline for deployment testing.
-
----
-
-## Scaling
-
-### Horizontal Scaling
-Deploy multiple instances with different configurations:
-
+### Optional Variables
 ```bash
-# Agent 1 - Discord
-DISCORD_API_TOKEN=bot-1-token
-docker-compose -f docker-compose.slim.yaml up -d
+# Alternative AI Providers
+ANTHROPIC_API_KEY=sk-ant-your-key
+GEMINI_API_KEY=your-gemini-key
 
-# Agent 2 - Telegram  
-TELEGRAM_BOT_TOKEN=bot-2-token
-docker-compose -f docker-compose.slim.yaml -p eliza-telegram up -d
+# Security & Performance
+SECURITY_ENABLED=true
+MAX_CONCURRENT_REQUESTS=10
+RATE_LIMIT_ENABLED=true
 ```
 
 ---
 
-## References
+## What You Get
 
-- [ElizaOS Documentation](https://eliza.how/docs/intro)
-- [ElizaOS GitHub](https://github.com/elizaOS/eliza)
-- [PM2 Documentation](https://pm2.keymetrics.io/docs/)
-- [Coolify Documentation](https://coolify.io/docs)
-- [Docker Best Practices](https://docs.docker.com/develop/dev-best-practices/)
+### Core Features
+- **Web Interface**: Direct chat with your AI agent
+- **Socket.IO**: Real-time chat functionality  
+- **REST API**: Integration endpoints for external systems
+- **Multi-character**: Support for multiple agent personalities
+- **Plugin System**: Full ElizaOS plugin ecosystem compatibility
 
+### Production Features
+- **Non-privileged execution**: Secure container without root access
+- **Process supervision**: PM2 with proper restart policies
+- **Health monitoring**: Built-in health checks and status endpoints
+- **Dynamic plugin loading**: Automatic plugin installation and loading
+- **Database management**: Automatic schema setup and migrations
+- **Resource management**: Memory and CPU optimization
 
+### Security & Reliability
+- **Environment-based secrets**: No hardcoded API keys
+- **Database isolation**: Secure PostgreSQL with proper user permissions
+- **Container hardening**: Minimal attack surface
+- **SSL termination**: HTTPS support via provider infrastructure
+- **Graceful shutdown**: Proper cleanup on container stop
+
+---
+
+## Requirements
+
+- **OpenAI API key** (or Anthropic/Gemini alternative)
+- **2GB+ RAM** recommended for stable operation
+- **PostgreSQL database** (auto-configured on most platforms)
+- **Node.js 18+** runtime (handled by container)
+
+---
+
+## Project Structure
+
+```
+elizify/
+├── scripts/           # Core deployment scripts
+│   ├── start.sh       # Main container startup
+│   ├── elizaos-wrapper.sh  # PM2 wrapper for direct execution
+│   └── status-elizaos.sh   # Health and status monitoring
+├── config/           # Agent configuration
+│   └── characters/   # Character definition files (customize here)
+├── providers/        # Platform-specific deployment guides  
+│   ├── custom/       # Docker Compose setup
+│   └── coolify/      # Coolify platform guide
+├── database/         # Schema and migrations
+│   ├── schema/       # Clean database initialization
+│   ├── migrations/   # Database updates and fixes
+│   └── scripts/      # Database maintenance utilities
+├── testing/          # Test utilities
+│   ├── chat/         # Socket.IO chat testing
+│   └── health/       # Health check scripts
+└── docs/            # Architecture and troubleshooting
+```
+
+---
+
+## Character Customization
+
+### Adding Your Character
+
+1. **Create character file** in `config/characters/your-agent.json`
+2. **Set environment variable** `CHARACTER_FILE=your-agent.json`  
+3. **Deploy** - your agent personality will be loaded automatically
+
+### Character File Structure
+```json
+{
+  "name": "Your Agent Name",
+  "bio": "Agent background and personality",
+  "lore": ["Character backstory", "Key traits"],
+  "knowledge": ["Domain expertise", "Special knowledge"],
+  "messageExamples": [
+    [{"user": "User1", "content": {"text": "Hello"}}],
+    [{"user": "YourAgent", "content": {"text": "Hello! How can I help?"}}]
+  ],
+  "postExamples": ["Example posts your agent might make"],
+  "topics": ["Topics your agent knows about"],
+  "style": {
+    "all": ["Tone", "Communication style"],
+    "chat": ["Chat-specific behaviors"],
+    "post": ["Social media style"]
+  },
+  "adjectives": ["Personality traits"]
+}
+```
+
+---
+
+## Management & Monitoring
+
+### Health Checks
+```bash
+# HTTP health endpoint
+curl http://your-domain/health
+
+# Container status (for custom deployments)
+docker exec elizify-elizaos-1 ./scripts/status-elizaos.sh
+
+# Chat functionality test
+bun testing/chat/test-chat-correct.js
+```
+
+### Process Management (Custom Deployments)
+```bash
+# View logs
+docker-compose logs -f elizaos
+
+# Restart service
+docker-compose restart elizaos
+
+# Update deployment
+git pull
+docker-compose pull
+docker-compose up -d
+```
+
+---
+
+## Need Help?
+
+- **Custom Setup**: See [providers/custom/README.md](providers/custom/README.md)
+- **Coolify Setup**: See [providers/coolify/README.md](providers/coolify/README.md)
+- **Architecture Details**: See [docs/architecture.md](docs/architecture.md)
+- **Character Creation**: Check ElizaOS character documentation
+
+---
+
+## Contributing
+
+Production deployments only. All guides must be tested before merge.
