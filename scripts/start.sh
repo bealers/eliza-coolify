@@ -70,6 +70,51 @@ else
     echo "No character files found, using default configuration"
 fi
 
+# Dynamic plugin installation based on character files
+echo "Checking for required plugins..."
+REQUIRED_PLUGINS=""
+
+if [ -d "/app/config/characters" ] && [ "$(ls -A /app/config/characters)" ]; then
+    for file in /app/config/characters/*.json; do
+        if [ -f "$file" ]; then
+            # Extract plugins array from character file
+            PLUGINS=$(node -p "
+                try {
+                    const char = JSON.parse(require('fs').readFileSync('$file', 'utf8'));
+                    const plugins = char.plugins || [];
+                    plugins.join(' ');
+                } catch(e) {
+                    '';
+                }
+            " 2>/dev/null || echo "")
+            
+            if [ -n "$PLUGINS" ]; then
+                echo "Found plugins in $(basename "$file"): $PLUGINS"
+                REQUIRED_PLUGINS="$REQUIRED_PLUGINS $PLUGINS"
+            fi
+        fi
+    done
+    
+    # Remove duplicates and install missing plugins
+    if [ -n "$REQUIRED_PLUGINS" ]; then
+        UNIQUE_PLUGINS=$(echo $REQUIRED_PLUGINS | tr ' ' '\n' | sort -u | tr '\n' ' ')
+        echo "Installing required plugins: $UNIQUE_PLUGINS"
+        
+        for plugin in $UNIQUE_PLUGINS; do
+            if [ -n "$plugin" ]; then
+                echo "Installing $plugin..."
+                bun add "$plugin" || echo "Warning: Failed to install $plugin"
+            fi
+        done
+        
+        echo "Plugin installation completed"
+    else
+        echo "No plugins required"
+    fi
+else
+    echo "No character files to scan for plugins"
+fi
+
 # Test database connection if available
 if [ -n "$POSTGRES_URL" ]; then
     echo "Testing database connection..."
@@ -92,7 +137,7 @@ echo "Clearing old logs..."
 truncate -s 0 /app/logs/elizaos-*.log 2>/dev/null || echo "Could not clear logs"
 
 echo "Starting new PM2 process..."
-$PM2_BIN start ecosystem.config.js
+    $PM2_BIN start config/ecosystem.config.js
 
 # Wait a moment for the process to initialize
 sleep 5
@@ -118,7 +163,7 @@ echo ""
 echo "Running initial health check in 10 seconds..."
 sleep 10
 
-if node /app/healthcheck.js; then
+if node /app/scripts/healthcheck.js; then
     echo "Health check passed - service is responding"
 else
     echo "Health check failed - investigating..."

@@ -97,7 +97,7 @@ services:
     
     # Health check - check if the server is responding
     healthcheck:
-      test: ["CMD", "bun", "/app/healthcheck.js"]
+      test: ["CMD", "bun", "/app/scripts/healthcheck.js"]
       interval: 30s
       timeout: 10s
       retries: 3

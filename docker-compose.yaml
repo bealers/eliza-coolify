@@ -57,7 +57,7 @@ services:
       db:
         condition: service_healthy
     
-    # Clean Coolify configuration - let auto-detection work
+    # Coolify auto-detection magic
     labels:
       - "coolify.managed=true"
     
@@ -73,7 +73,7 @@ services:
     
     # Health check - check if the server is responding
     healthcheck:
-      test: ["CMD", "bun", "/app/healthcheck.js"]
+      test: ["CMD", "bun", "/app/scripts/healthcheck.js"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -100,7 +100,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       # Copy the init script instead of mounting as volume to avoid directory issues
-      - ./init-db.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./db/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     
     # PostgreSQL port (for local development)
     ports:
