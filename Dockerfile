@@ -39,6 +39,9 @@ COPY --chown=eliza:eliza package.json ./
 # Install dependencies as root (before switching to eliza user)
 RUN bun install
 
+# Ensure eliza user can install additional plugins dynamically
+RUN chown -R eliza:eliza /app/node_modules /app/package.json /app/bun.lock* || true
+
 # Copy application files
 COPY --chown=eliza:eliza config/ecosystem.config.js ./config/
 COPY --chown=eliza:eliza scripts/start.sh ./scripts/

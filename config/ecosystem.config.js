@@ -1,8 +1,7 @@
 module.exports = {
   apps: [{
     name: 'elizaos',
-    script: './node_modules/.bin/elizaos',
-    args: 'start --port ' + (process.env.API_PORT || 3000) + ' --character ' + (process.env.CHARACTER_FILE || '/app/config/characters/server-bod.character.json'),
+    script: './scripts/elizaos-wrapper.sh',
     cwd: '/app',
     instances: 1,
     autorestart: true,
@@ -11,16 +10,12 @@ module.exports = {
     env: {
       NODE_ENV: process.env.NODE_ENV || 'development',
       API_PORT: process.env.API_PORT || 3000,
-      LOG_LEVEL: process.env.LOG_LEVEL || 'debug',
+      LOG_LEVEL: 'debug',
       HOST: '0.0.0.0',
-      STATIC_PATH: './node_modules/@elizaos/cli/dist'
+      CHARACTER_FILE: process.env.CHARACTER_FILE || '/app/config/characters/server-bod.character.json'
     },
-    error_file: '/app/logs/elizaos-error.log',
-    out_file: '/app/logs/elizaos-out.log',
-    log_file: '/app/logs/elizaos-combined.log',
     time: true,
     log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
-    merge_logs: true,
     max_restarts: 10,
     min_uptime: '10s',
     kill_timeout: 5000,
