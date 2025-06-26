@@ -1,13 +1,19 @@
-# Development, keep repo clean
+## PRIVATE REPO. these are allowed
+#.taskmaster/
+#.cursor/
+
+## symlink to resources managed elsewhere
+.bealers 
 .bealers/
-.env
 doc/
-.cursor/
-.taskmaster/
+doc
+
+
+# standard
+.env
 .eliza/
 *.db
 *.sqlite*
-
 node_modules/
 bun.lockb
 

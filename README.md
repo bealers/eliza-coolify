@@ -22,8 +22,7 @@ Production-ready ElizaOS deployment that works across multiple cloud providers.
 
 ### 1. Fork & Customize
 ```bash
-# 1. Fork this repository to your GitHub account
-# 2. Clone your fork
+# 1. Fork and clone
 git clone https://github.com/YOUR-USERNAME/elizify.git
 cd elizify
 

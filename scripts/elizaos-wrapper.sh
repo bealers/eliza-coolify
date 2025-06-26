@@ -3,17 +3,16 @@ set -e
 
 # ElizaOS Direct Execution Wrapper for PM2
 # This script is managed by PM2 but runs ElizaOS directly
-# to preserve the execution environment that works
 
 echo "ElizaOS Wrapper: Starting direct execution..."
 
 # Set default environment
-export NODE_ENV=${NODE_ENV:-development}
+export NODE_ENV=${NODE_ENV:-production}
 export API_PORT=${API_PORT:-3000}
-export LOG_LEVEL=${LOG_LEVEL:-debug}
+export LOG_LEVEL=${LOG_LEVEL:-info}
 export HOST=${HOST:-0.0.0.0}
 
-# Character file
+# Character file @TODO: character.ts
 CHARACTER_FILE=${CHARACTER_FILE:-/app/config/characters/server-bod.character.json}
 
 echo "ElizaOS Wrapper: Environment configured"
