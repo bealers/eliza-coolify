@@ -8,6 +8,10 @@
     "dev": "NODE_ENV=development bun run --bun scripts/start.sh",
     "stop": "bun run scripts/stop-elizaos.sh",
     "status": "bun run scripts/status-elizaos.sh",
+    "pm2:start": "./scripts/start-elizaos.sh",
+    "pm2:stop": "./scripts/stop-elizaos.sh",
+    "pm2:status": "./scripts/status-elizaos.sh",
+    "health": "bun scripts/healthcheck.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -28,7 +32,10 @@
     "url": "https://github.com/bealers/elizify"
   },
   "dependencies": {
-    "@elizaos/cli": "latest"
+    "@elizaos/cli": "latest",
+    "@elizaos/core": "latest",
+    "pm2": "^5.4.3",
+    "socket.io-client": "^4.8.1"
   },
   "engines": {
     "node": ">=18.0.0"
