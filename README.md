@@ -1,19 +1,23 @@
 # elizaOS Production Deployment
 
-Production-ready Docker deployment for elizaOS agents. Deploy anywhere Docker Compose is supported.
+Production-ready Docker deployment for [elizaOS](https://github.com/elizaOS/eliza) agents. Deploy anywhere Docker Compose is supported.
 
-## Quick Start (3 Steps)
+Tested on [Coolify](https://coolify.io/), guides for other platforms on their way.
 
-1. **Fork this repository** or download the deployment files
+**Project status:** Early alpha, need to neatly enable/disable the web UI. Currently manually disabling it through Coolify proxy.
+
+## Quick Start
+
+1. **Fork this repo**
 2. **Set your API keys** in environment variables
-3. **Deploy** - Run `docker-compose up -d`
+3. **Spin up containers** - Run `docker-compose up -d`
 
-Your elizaOS agent is running at `http://localhost:3000` with chat interface and ready for API connections.
+Your elizaOS agent is running at `http://localhost:3000` with chat interface and ready to accept API connections.
 
 ## What's Included
 
-- **Non-root execution** - Runs as dedicated user with proper file permissions
-- **PostgreSQL database** - Internal database included, external database support
+- **Non-root execution** - Runs as non-privileged user with sensible file permissions
+- **PostgreSQL by default** - Internal database included, external database support with slim config.
 - **PM2 process management** - Auto-restart on failure, 2GB memory limit, graceful shutdowns
 - **Health monitoring** - API health endpoints, PM2 status monitoring, structured logging
 - **Docker deployment** - Standard Docker Compose, works on any Docker based platform
@@ -30,7 +34,7 @@ Your elizaOS agent is running at `http://localhost:3000` with chat interface and
 2. **Repository URL**: `https://github.com/yourusername/your-fork`
 3. **Build Pack**: Docker Compose
 4. **Compose File**: `docker-compose.yaml`
-5. **Environment Variables**: Set your AI API key (see [Environment Setup](#environment-configuration))
+5. **Environment Variables**: Set your API keys
 6. **Deploy**
 
 
@@ -58,7 +62,7 @@ POSTGRES_URL=postgresql://user:password@host:5432/database
 ## Character Configuration
 
 ### Default Character
-Includes a production-ready character (`server-bod.character.json`) for immediate deployment testing.
+Includes a throw-away character (`server-bod.character.json`) for immediate deployment testing.
 
 ### Custom Characters
 1. **Create your character** following the [elizaOS character schema](https://eliza.how/docs/core/characterfile)
