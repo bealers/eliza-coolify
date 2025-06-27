@@ -2,7 +2,8 @@
   "name": "Server Bod",
   "plugins": [
     "@elizaos/plugin-bootstrap",
-    "@elizaos/plugin-openai"
+    "@elizaos/plugin-openai",
+    "@bealers/plugin-mattermost"
   ],
   "secrets": {},
   "settings": {
