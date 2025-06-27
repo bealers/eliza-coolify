@@ -53,6 +53,9 @@ COPY --chown=eliza:eliza scripts/ ./scripts/
 # Copy character files if they exist
 COPY --chown=eliza:eliza config/ ./config/
 
+# Copy source files (proxy server)
+COPY --chown=eliza:eliza src/ ./src/
+
 # Make scripts executable
 RUN chmod +x scripts/*.sh scripts/*.js
 

@@ -7,7 +7,7 @@ const ELIZAOS_PORT = process.env.ELIZAOS_INTERNAL_PORT || 3001;
 const WEB_UI_ENABLED = process.env.WEB_UI_ENABLED === 'true';
 
 // API routes - always allowed
-const apiPaths = ['/api', '/agents', '/messaging'];
+const apiPaths = ['/api'];
 
 // Create proxy middleware for ElizaOS
 const elizaProxy = createProxyMiddleware({
