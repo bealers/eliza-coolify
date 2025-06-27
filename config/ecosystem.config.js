@@ -12,7 +12,7 @@ module.exports = {
         NODE_ENV: process.env.NODE_ENV || 'development',
         API_PORT: process.env.API_PORT || 3000,
         ELIZAOS_INTERNAL_PORT: process.env.ELIZAOS_INTERNAL_PORT || 3001,
-        WEB_UI_ENABLED: process.env.WEB_UI_ENABLED || 'false'
+        WEB_UI_ENABLED: process.env.WEB_UI_ENABLED
       },
       time: true,
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',

@@ -4,7 +4,13 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 const PORT = process.env.API_PORT || 3000;
 const ELIZAOS_PORT = process.env.ELIZAOS_INTERNAL_PORT || 3001;
-const WEB_UI_ENABLED = process.env.WEB_UI_ENABLED === 'true';
+
+// Environment-aware Web UI defaults
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const defaultWebUIEnabled = NODE_ENV === 'development' ? 'true' : 'false';
+const WEB_UI_ENABLED = (!process.env.WEB_UI_ENABLED || process.env.WEB_UI_ENABLED === '')
+  ? defaultWebUIEnabled === 'true'
+  : process.env.WEB_UI_ENABLED === 'true';
 
 // API routes - always allowed
 const apiPaths = ['/api'];
@@ -49,8 +55,9 @@ app.use('*', (req, res, next) => {
 // Start the proxy server
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`ElizaOS Proxy Server running on port ${PORT}`);
+  console.log(`Environment: ${NODE_ENV}`);
   console.log(`Forwarding API requests to ElizaOS on port ${ELIZAOS_PORT}`);
-  console.log(`Web UI enabled: ${WEB_UI_ENABLED}`);
+  console.log(`Web UI enabled: ${WEB_UI_ENABLED} (default for ${NODE_ENV}: ${defaultWebUIEnabled})`);
   console.log(`API endpoints available: ${apiPaths.join(', ')}`);
 });
 
