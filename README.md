@@ -34,11 +34,8 @@ Your elizaOS agent is running at `http://localhost:3000` with chat interface and
 6. **Deploy**
 
 
-### Cloud Platforms
+**NOW DISABLE THE WEB UI**
 
-- **Digital Ocean**: Use `docker-compose.slim.yaml` with managed PostgreSQL
-- **Railway**: Deploy `docker-compose.yaml` with Railway PostgreSQL addon
-- **AWS/GCP**: Use `docker-compose.slim.yaml` with managed database services
 
 ---
 
@@ -55,19 +52,6 @@ Your elizaOS agent is running at `http://localhost:3000` with chat interface and
 # Use docker-compose.slim.yaml
 POSTGRES_URL=postgresql://user:password@host:5432/database
 ```
-
-### Optional Platform Integration
-
-```bash
-# Discord Bot
-DISCORD_APPLICATION_ID=your-app-id
-DISCORD_API_TOKEN=your-bot-token
-
-# Telegram Bot
-TELEGRAM_BOT_TOKEN=your-bot-token
-```
-
-**Complete environment reference**: See `env.example` for all options.
 
 ---
 
