@@ -135,14 +135,7 @@ docker exec <container> pm2 list
 docker exec <container> ./scripts/status-elizaos.sh
 ```
 
-### Common Issues
-
-**Agent not responding**: Check API key configuration and elizaOS logs
-**Database errors**: Verify PostgreSQL connection and credentials  
-**Memory issues**: Monitor with `pm2 monit` and adjust container resources
-**Character loading**: Validate JSON syntax and file permissions
-
-### Performance Monitoring
+### Monitoring
 
 ```bash
 # Resource usage
