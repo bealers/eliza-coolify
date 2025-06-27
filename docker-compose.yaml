@@ -23,6 +23,13 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-debug}
       HOST: "0.0.0.0"
       
+      # ElizaOS Configuration
+      SENTRY_LOGGING: ${SENTRY_LOGGING:-false}
+      SENTRY_DSN: ${SENTRY_DSN}
+      
+      # API Security
+      ELIZA_SERVER_AUTH_TOKEN: ${ELIZA_SERVER_AUTH_TOKEN}
+      
       # Coolify magic environment variable for port detection
       SERVICE_FQDN_ELIZA_3000: ""
       
@@ -33,18 +40,15 @@ services:
       # AI Providers
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GOOGLE_GENERATIVE_AI_API_KEY: ${GOOGLE_GENERATIVE_AI_API_KEY}
       
       # Integration Services
       DISCORD_APPLICATION_ID: ${DISCORD_APPLICATION_ID}
       DISCORD_API_TOKEN: ${DISCORD_API_TOKEN}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
       
-      # Security
-      JWT_SECRET: ${JWT_SECRET}
+      # Performance & CORS
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
-      
-      # Performance
       MAX_MEMORY_USAGE: ${MAX_MEMORY_USAGE:-2048}
       RATE_LIMIT_REQUESTS: ${RATE_LIMIT_REQUESTS:-100}
     

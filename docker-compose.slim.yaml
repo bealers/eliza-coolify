@@ -27,7 +27,7 @@ services:
       # AI Providers
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GOOGLE_GENERATIVE_AI_API_KEY: ${GOOGLE_GENERATIVE_AI_API_KEY}
       OLLAMA_API_URL: ${OLLAMA_API_URL}
       
       # Integration Services
@@ -55,9 +55,11 @@ services:
       OPENWEATHER_API_KEY: ${OPENWEATHER_API_KEY}
       
       # Security & Performance
-      JWT_SECRET: ${JWT_SECRET}
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
       CORS_CREDENTIALS: ${CORS_CREDENTIALS:-false}
+      
+      # API Security
+      ELIZA_SERVER_AUTH_TOKEN: ${ELIZA_SERVER_AUTH_TOKEN}
       
       RATE_LIMIT_REQUESTS: ${RATE_LIMIT_REQUESTS:-100}
       RATE_LIMIT_WINDOW: ${RATE_LIMIT_WINDOW:-900000}
