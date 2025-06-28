@@ -1,6 +1,6 @@
 # elizaOS Production Deployment
 
-Production-ready Docker deployment for [elizaOS](https://github.com/elizaOS/eliza) agents. Deploy anywhere Docker Compose is supported.
+Just Works™️ production-ready Docker deployment for [elizaOS](https://github.com/elizaOS/eliza) agents. Deploy anywhere Docker Compose is supported.
 
 Tested on [Coolify](https://coolify.io/), guides for other platforms on their way.
 
